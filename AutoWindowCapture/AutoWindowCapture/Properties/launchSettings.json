@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AutoWindowCapture": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

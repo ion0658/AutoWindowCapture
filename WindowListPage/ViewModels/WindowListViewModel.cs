@@ -4,11 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using WindowEnumerator;
+using WindowListPage.Services;
 
 namespace WindowListPage.ViewModels;
 
 public sealed partial class WindowListViewModel : ObservableObject {
-    private WindowMonitor _observer = new();
+    private readonly WindowMonitor _observer = new();
+    private IRecordingWindowLauncher? _recordingWindowLauncher;
 
     [ObservableProperty]
     private ObservableCollection<WindowInfo> _windows = [];
@@ -30,6 +32,18 @@ public sealed partial class WindowListViewModel : ObservableObject {
         };
 
         SetWindows(_observer.EnumerateWindows());
+    }
+
+    public void SetRecordingWindowLauncher(IRecordingWindowLauncher launcher) {
+        _recordingWindowLauncher = launcher;
+    }
+
+    partial void OnSelectedWindowChanged(WindowInfo? value) {
+        if (value is null) {
+            return;
+        }
+
+        _recordingWindowLauncher?.OpenOrActivate(value);
     }
 
     public void SetWindows(IEnumerable<WindowInfo> windows) {

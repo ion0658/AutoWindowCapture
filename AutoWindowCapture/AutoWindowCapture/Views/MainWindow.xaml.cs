@@ -16,6 +16,7 @@ public sealed partial class MainWindow : Window {
         InitializeComponent();
 
         var nav = new NavigationService { Frame = this.ContentFrame };
-        vm = new MainWindowViewModel(nav);
+        var recordingWindowLauncher = new RecordingWindowLauncher();
+        vm = new MainWindowViewModel(nav, recordingWindowLauncher);
     }
 }

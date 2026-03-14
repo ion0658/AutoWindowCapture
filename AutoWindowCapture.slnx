@@ -1,16 +1,21 @@
 <Solution>
   <Configurations>
+    <Platform Name="Any CPU" />
     <Platform Name="ARM64" />
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
   <Project Path="AutoWindowCapture/AutoWindowCapture (Package)/AutoWindowCapture (Package).wapproj" Type="c7167f0d-bc9f-4e6e-afe1-012c56b48db5">
-    <Deploy />
+    <Platform Solution="*|Any CPU" Project="x64" />
+    <Build Solution="*|Any CPU" Project="false" />
+    <Deploy Solution="*|ARM64" />
+    <Deploy Solution="*|x64" />
+    <Deploy Solution="*|x86" />
   </Project>
   <Project Path="AutoWindowCapture/AutoWindowCapture/AutoWindowCapture.csproj">
     <Platform Solution="*|ARM64" Project="ARM64" />
-    <Platform Solution="*|x64" Project="x64" />
     <Platform Solution="*|x86" Project="x86" />
+    <Platform Solution="Debug|x64" Project="x64" />
   </Project>
   <Project Path="ConfigManager/ConfigManager.csproj" />
   <Project Path="ConfigPage/ConfigPage.csproj" Id="aa21e1ba-1bdd-4d23-b5fd-50cfabbe16c9" />

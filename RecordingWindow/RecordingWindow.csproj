@@ -14,6 +14,7 @@
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260209005" />
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\ConfigManager\ConfigManager.csproj" />
 		<ProjectReference Include="..\MediaRenderer\MediaRenderer.csproj" />
 		<ProjectReference Include="..\WindowCapture\WindowCapture.csproj" />
 		<ProjectReference Include="..\WindowEnumerator\WindowEnumerator.csproj" />

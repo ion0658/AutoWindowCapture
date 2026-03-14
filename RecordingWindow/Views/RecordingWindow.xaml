@@ -13,6 +13,5 @@
     </Window.SystemBackdrop>
 
     <Grid>
-        <TextBlock Text="WIP" />
     </Grid>
 </Window>

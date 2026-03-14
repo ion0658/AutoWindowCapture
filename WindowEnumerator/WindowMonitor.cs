@@ -10,7 +10,6 @@ namespace WindowEnumerator;
 
 public delegate void WindowInfoChangedHandler(object? sender, WindowInfo window);
 
-[Bindable]
 public sealed class WindowInfo : IEquatable<WindowInfo> {
     public WindowInfo(IntPtr handle, string title, uint processId, string processName) {
         Handle = handle;

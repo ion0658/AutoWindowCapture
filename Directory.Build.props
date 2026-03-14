@@ -1,21 +1,23 @@
 <Project>
-	<PropertyGroup>
+    <PropertyGroup>
         <Version>0.1.0</Version>
         <AssemblyVersion>0.1.0</AssemblyVersion>
         <FileVersion>0.1.0</FileVersion>
         <InformationalVersion>0.1.0</InformationalVersion>
 
         <LangVersion>latest</LangVersion>
+        <PublishAot>False</PublishAot>
         <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+        <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
         <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
 
         <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutDir>
-		<BaseIntermediateOutputPath>$(SolutionDir)\obj\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+        <BaseIntermediateOutputPath>$(SolutionDir)\obj\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
 
-		<Deterministic>true</Deterministic>
-		<Nullable>enable</Nullable>
-		<WindowsPackageType>None</WindowsPackageType>
-	</PropertyGroup>
+        <Deterministic>true</Deterministic>
+        <Nullable>enable</Nullable>
+        <WindowsPackageType>None</WindowsPackageType>
+    </PropertyGroup>
 
 </Project>
 

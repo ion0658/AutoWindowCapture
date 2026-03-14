@@ -7,7 +7,6 @@
 		<RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
 		<UseWinUI>true</UseWinUI>
 		<WinUISDKReferences>false</WinUISDKReferences>
-		<Nullable>enable</Nullable>
 		<WindowsPackageType>None</WindowsPackageType>
 	</PropertyGroup>
 
@@ -23,8 +22,10 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\ConfigManager\ConfigManager.csproj" />
+		<ProjectReference Include="..\..\ConfigPage\ConfigPage.csproj" />
 		<ProjectReference Include="..\..\RecordingWindow\RecordingWindow.csproj" />
 		<ProjectReference Include="..\..\WindowEnumerator\WindowEnumerator.csproj" />
+		<ProjectReference Include="..\..\WindowListPage\WindowListPage.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -43,7 +44,6 @@
 		<PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
 		<PublishTrimmed Condition="'$(Configuration)' == 'Debug'">True</PublishTrimmed>
 		<PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
-		<PublishAot>False</PublishAot>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>

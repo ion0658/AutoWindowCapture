@@ -1,6 +1,7 @@
+using AutoWindowCapture.Services;
 using AutoWindowCapture.ViewModels;
 using Microsoft.UI.Xaml;
-
+using Microsoft.UI.Xaml.Controls;
 
 namespace AutoWindowCapture.View;
 
@@ -9,9 +10,12 @@ namespace AutoWindowCapture.View;
 /// </summary>
 public sealed partial class MainWindow : Window {
 
-    public MainWindowViewModel vm { get; } = new();
+    public MainWindowViewModel vm { get; }
 
     public MainWindow() {
         InitializeComponent();
+
+        var nav = new NavigationService { Frame = this.ContentFrame };
+        vm = new MainWindowViewModel(nav);
     }
 }

@@ -5,7 +5,8 @@
         xmlns:local="using:AutoWindowCapture"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:windowEnumerator="using:WindowEnumerator"
+        xmlns:windowlist="using:WindowListPage.Views"
+        xmlns:config="using:ConfigPage.Views"
         mc:Ignorable="d"
         Title="AutoWindowCapture">
 
@@ -13,60 +14,16 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-
-    <Grid Padding="16">
-        <TabView IsAddTabButtonVisible="False">
-            <TabViewItem Header="ウィンドウ一覧"
-                         IsClosable="False">
-                <TabViewItem.Content>
-                    <Grid Padding="0,12,0,0"
-                          RowSpacing="12">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-
-                        <TextBlock Opacity="0.7"
-                                   Text="{x:Bind vm.StatusMessage, Mode=OneWay}" />
-
-                        <ListView Grid.Row="1"
-                                  ItemsSource="{x:Bind vm.Windows, Mode=OneWay}"
-                                  VerticalAlignment="Stretch"
-                                  MinHeight="100">
-
-
-                            <ListView.ItemTemplate>
-                                <DataTemplate x:DataType="windowEnumerator:WindowInfo">
-                                    <StackPanel Spacing="4"
-                                                Orientation="Vertical">
-                                        <StackPanel Spacing="4"
-                                                    Orientation="Horizontal">
-                                            <TextBlock Text="{x:Bind Title}"
-                                                       TextWrapping="WrapWholeWords" />
-                                        </StackPanel>
-                                        <StackPanel Spacing="4"
-                                                    Orientation="Horizontal">
-                                            <TextBlock Opacity="0.7"
-                                                       Text="{x:Bind ProcessName}" />
-                                            <TextBlock FontFamily="Consolas"
-                                                       Opacity="0.7"
-                                                       Text="{x:Bind ProcessId}" />
-                                        </StackPanel>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-
-                        </ListView>
-                    </Grid>
-                </TabViewItem.Content>
-            </TabViewItem>
-
-            <TabViewItem Header="設定"
-                         IsClosable="False">
-                <Grid Padding="0,12,0,0">
-                    <TextBlock Text="{x:Bind vm.SettingsMessage, Mode=OneWay}" />
-                </Grid>
-            </TabViewItem>
-        </TabView>
-    </Grid>
+    <NavigationView PaneDisplayMode="LeftMinimal"
+                    IsBackButtonVisible="Collapsed"
+                    SelectedItem="{x:Bind vm.SelectedItem, Mode=TwoWay}">
+        <NavigationView.MenuItems>
+            <NavigationViewItem Content="ウィンドウ一覧"
+                                Icon="AllApps"
+                                IsSelected="True"
+                                Tag="WindowList" />
+        </NavigationView.MenuItems>
+        <Frame x:Name="ContentFrame"
+               Padding="50" />
+    </NavigationView>
 </Window>

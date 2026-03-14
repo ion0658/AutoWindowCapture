@@ -6,7 +6,7 @@
 		<WinUISDKReferences>false</WinUISDKReferences>
 	</PropertyGroup>
 	<ItemGroup>
-	  <None Remove="Views\RecordingWindow.xaml" />
+		<None Remove="Views\RecordingWindow.xaml" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
@@ -20,9 +20,9 @@
 		<ProjectReference Include="..\WindowEnumerator\WindowEnumerator.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Page Update="Views\RecordingWindow.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
+		<Page Update="Views\RecordingWindow.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
 	</ItemGroup>
 
 </Project>

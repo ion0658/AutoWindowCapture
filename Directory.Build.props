@@ -17,7 +17,8 @@
         <Deterministic>true</Deterministic>
         <Nullable>enable</Nullable>
         <WindowsPackageType>None</WindowsPackageType>
+        <BuiltInComSupport>true</BuiltInComSupport>
+        <PublishTrimmed>false</PublishTrimmed>
     </PropertyGroup>
 
 </Project>
-

@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using RecordingWindow.ViewModels;
+using System.Diagnostics;
 using WindowEnumerator;
 
 namespace RecordingWindow.Views;

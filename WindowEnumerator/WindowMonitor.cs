@@ -13,6 +13,7 @@ public delegate void WindowInfoChangedHandler(object? sender, WindowInfo window)
 public sealed class WindowInfo : IEquatable<WindowInfo> {
     public WindowInfo(IntPtr handle, string title, uint processId, string processName) {
         Handle = handle;
+        Handle = handle;
         Title = title;
         ProcessId = processId;
         ProcessName = processName;
@@ -33,15 +34,6 @@ public sealed class WindowInfo : IEquatable<WindowInfo> {
 
     public string ProcessName { get; }
 
-    public string HandleDisplay => $"0x{Handle.ToInt64():X}";
-
-    public override string ToString() {
-        if (string.IsNullOrWhiteSpace(ProcessName)) {
-            return $"{Title} ({HandleDisplay})";
-        }
-
-        return $"{Title} - {ProcessName} ({HandleDisplay})";
-    }
 
     public bool Equals(WindowInfo? other) {
         if (other is null) {
@@ -65,6 +57,7 @@ public sealed class WindowMonitor : IDisposable {
         NativeMethods.EVENT_OBJECT_SHOW,
         NativeMethods.EVENT_OBJECT_HIDE
     ];
+    private readonly int CurrentProcessId = Process.GetCurrentProcess().Id;
 
     public WindowMonitor() {
         _winEventProc = OnWinEvent;
@@ -112,7 +105,7 @@ public sealed class WindowMonitor : IDisposable {
         }
 
         NativeMethods.GetWindowThreadProcessId(windowHandle, out var processId);
-        if (processId == 0) {
+        if (processId == 0 || processId == CurrentProcessId) {
             return null;
         }
 

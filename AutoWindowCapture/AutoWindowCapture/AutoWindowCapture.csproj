@@ -51,8 +51,8 @@
 		<WarningLevel>8</WarningLevel>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-	  <WarningLevel>8</WarningLevel>
+		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+		<WarningLevel>8</WarningLevel>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
@@ -67,8 +67,8 @@
 		<WarningLevel>8</WarningLevel>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-	  <WarningLevel>8</WarningLevel>
+		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+		<WarningLevel>8</WarningLevel>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>

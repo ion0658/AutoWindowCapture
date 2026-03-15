@@ -17,8 +17,7 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0"
-              Padding="10">
+        <Grid Grid.Row="0">
             <canvas:CanvasSwapChainPanel x:Name="Canvas"
                                          SwapChain="{x:Bind vm.SwapChain,Mode=OneWay}" />
         </Grid>
@@ -34,3 +33,4 @@
         </Grid>
     </Grid>
 </Window>
+

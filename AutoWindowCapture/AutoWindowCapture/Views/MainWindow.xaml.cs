@@ -19,3 +19,4 @@ public sealed partial class MainWindow : Window {
         vm = new MainWindowViewModel(nav, recordingWindowLauncher);
     }
 }
+

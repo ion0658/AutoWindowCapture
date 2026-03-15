@@ -13,8 +13,10 @@ public sealed partial class RecordingWindow : Window {
         InitializeComponent();
 
         Title = $"Recording - {targetWindow.ProcessName}";
-        vm = new RecordingWindowViewModel(targetWindow, CanvasDevice.GetSharedDevice());
+        vm = new RecordingWindowViewModel(targetWindow, CanvasDevice.GetSharedDevice(), DispatcherQueue);
         Canvas.SizeChanged += (s, e) => { vm.SwapChain?.ResizeBuffers(e.NewSize); };
+        vm.CloseRequested += () => DispatcherQueue.TryEnqueue(() => Close());
         Closed += (s, e) => vm.Dispose();
     }
 }
+

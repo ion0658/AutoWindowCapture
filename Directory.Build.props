@@ -18,7 +18,9 @@
         <Nullable>enable</Nullable>
         <WindowsPackageType>None</WindowsPackageType>
         <BuiltInComSupport>true</BuiltInComSupport>
-        <PublishTrimmed>false</PublishTrimmed>
-    </PropertyGroup>
 
+        <IsAotCompatible>false</IsAotCompatible>
+        <OptimizationPreference>speed</OptimizationPreference>
+    </PropertyGroup>
 </Project>
+

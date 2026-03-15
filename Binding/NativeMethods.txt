@@ -1,0 +1,31 @@
+﻿// Windows.Graphics.Capture
+IGraphicsCaptureItemInterop
+
+// Window Enumeration
+EnumWindows
+GetWindowText
+GetWindowTextLength
+IsWindow
+IsWindowVisible
+SetWinEventHook
+UnhookWinEvent
+GetWindowThreadProcessId
+GetAncestor
+GetParent
+GetWindow
+GetWindowLongW
+
+EVENT_OBJECT_CREATE
+EVENT_OBJECT_SHOW
+EVENT_OBJECT_NAMECHANGE
+EVENT_OBJECT_DESTROY
+EVENT_OBJECT_HIDE
+
+WINEVENT_OUTOFCONTEXT
+OBJECT_IDENTIFIER
+GET_WINDOW_CMD
+GET_ANCESTOR_FLAGS
+WINDOW_LONG_PTR_INDEX
+WINDOW_STYLE
+CHILDID_SELF
+

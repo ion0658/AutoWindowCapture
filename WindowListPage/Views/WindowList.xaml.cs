@@ -6,10 +6,12 @@ using WindowListPage.ViewModels;
 namespace WindowListPage.Views;
 
 public sealed partial class WindowList : Page {
-
-    public readonly WindowListViewModel vm = new();
+    public readonly WindowListViewModel vm;
     public WindowList() {
         InitializeComponent();
+
+        vm = new WindowListViewModel(DispatcherQueue);
+        Unloaded += (sender, args) => vm.Dispose();
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e) {

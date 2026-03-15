@@ -14,3 +14,4 @@ namespace AutoWindowCapture.Services {
         }
     }
 }
+

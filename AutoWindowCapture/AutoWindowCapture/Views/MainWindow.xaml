@@ -14,7 +14,7 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <NavigationView PaneDisplayMode="LeftMinimal"
+    <NavigationView PaneDisplayMode="Top"
                     IsBackButtonVisible="Collapsed"
                     SelectedItem="{x:Bind vm.SelectedItem, Mode=TwoWay}">
         <NavigationView.MenuItems>

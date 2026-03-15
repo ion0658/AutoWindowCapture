@@ -11,8 +11,26 @@
     <Window.SystemBackdrop>
         <MicaBackdrop />
     </Window.SystemBackdrop>
-    <Grid Padding="10">
-        <canvas:CanvasSwapChainPanel x:Name="Canvas"
-                                     SwapChain="{x:Bind vm.SwapChain,Mode=OneWay}" />
+    <Grid HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0"
+              Padding="10">
+            <canvas:CanvasSwapChainPanel x:Name="Canvas"
+                                         SwapChain="{x:Bind vm.SwapChain,Mode=OneWay}" />
+        </Grid>
+        <Grid Grid.Row="1"
+              Padding="10"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Bottom"
+              Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}">
+            <Button Content="{x:Bind vm.RecordButtonText,Mode=OneWay}"
+                    HorizontalAlignment="Center"
+                    Style="{ThemeResource AccentButtonStyle}"
+                    Command="{x:Bind vm.ClickCaptureCommand}" />
+        </Grid>
     </Grid>
 </Window>

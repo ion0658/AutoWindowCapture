@@ -42,7 +42,7 @@ public sealed class WindowCapture : IDisposable {
     }
 
     private void OnFrameArrived(Direct3D11CaptureFramePool sender, object args) {
-        using var frame = sender.TryGetNextFrame();
+        using Direct3D11CaptureFrame frame = sender.TryGetNextFrame();
         if (frame == null) {
             return;
         }

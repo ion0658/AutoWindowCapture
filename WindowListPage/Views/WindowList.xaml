@@ -7,8 +7,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:windowEnumerator="using:WindowEnumerator"
       mc:Ignorable="d">
-    <ListView Grid.Row="1"
-              MinHeight="100"
+    <ListView MinHeight="100"
               ItemsSource="{x:Bind vm.Windows, Mode=OneWay}"
               SelectedItem="{x:Bind vm.SelectedWindow, Mode=TwoWay}">
         <ListView.ItemTemplate>

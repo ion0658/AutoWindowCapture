@@ -1,4 +1,3 @@
-using Microsoft.UI.Xaml.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -36,33 +35,34 @@ public sealed class WindowInfo : IEquatable<WindowInfo> {
 
 
     public bool Equals(WindowInfo? other) {
-        if (other is null) {
-            return false;
-        }
-
-        return Handle == other.Handle
+        return other is not null && Handle == other.Handle
             && ProcessId == other.ProcessId
             && string.Equals(Title, other.Title, StringComparison.Ordinal)
             && string.Equals(ProcessName, other.ProcessName, StringComparison.Ordinal);
     }
 
-    public override bool Equals(object? obj) => obj is WindowInfo other && Equals(other);
+    public override bool Equals(object? obj) {
+        return obj is WindowInfo other && Equals(other);
+    }
 
-    public override int GetHashCode() => HashCode.Combine(Handle, Title, ProcessId, ProcessName);
+    public override int GetHashCode() {
+        return HashCode.Combine(Handle, Title, ProcessId, ProcessName);
+    }
 }
 
 public sealed class WindowMonitor : IDisposable {
     private readonly NativeMethods.WinEventProc _winEventProc;
     private readonly List<uint> _hook_targets = [
         NativeMethods.EVENT_OBJECT_SHOW,
-        NativeMethods.EVENT_OBJECT_HIDE
+        NativeMethods.EVENT_OBJECT_HIDE,
+        NativeMethods.EVENT_OBJECT_NAMECHANGE,
     ];
     private readonly int CurrentProcessId = Process.GetCurrentProcess().Id;
 
     public WindowMonitor() {
         _winEventProc = OnWinEvent;
-        foreach (var target in _hook_targets) {
-            RegisterHook(target);
+        foreach (uint target in _hook_targets) {
+            _ = RegisterHook(target);
         }
     }
 
@@ -71,16 +71,16 @@ public sealed class WindowMonitor : IDisposable {
     public event WindowInfoChangedHandler? WindowRemoved;
 
     public void Stop() {
-        foreach (var target in _hook_targets) {
-            NativeMethods.UnhookWinEvent(RegisterHook(target));
+        foreach (uint target in _hook_targets) {
+            _ = NativeMethods.UnhookWinEvent(RegisterHook(target));
         }
     }
 
     public IReadOnlyList<WindowInfo> EnumerateWindows() {
-        var windows = new List<WindowInfo>();
+        List<WindowInfo> windows = [];
 
         _ = NativeMethods.EnumWindows((windowHandle, _) => {
-            var windowInfo = TryCreateWindowInfo(windowHandle);
+            WindowInfo? windowInfo = TryCreateWindowInfo(windowHandle);
             if (windowInfo is null) {
                 return true;
             }
@@ -104,7 +104,7 @@ public sealed class WindowMonitor : IDisposable {
             return null;
         }
 
-        NativeMethods.GetWindowThreadProcessId(windowHandle, out var processId);
+        _ = NativeMethods.GetWindowThreadProcessId(windowHandle, out uint processId);
         if (processId == 0 || processId == CurrentProcessId) {
             return null;
         }
@@ -125,30 +125,30 @@ public sealed class WindowMonitor : IDisposable {
             return null;
         }
 
-        var style = NativeMethods.GetWindowLongPtr(windowHandle, NativeMethods.GWL_STYLE).ToInt64();
+        long style = NativeMethods.GetWindowLongPtr(windowHandle, NativeMethods.GWL_STYLE).ToInt64();
         if ((style & NativeMethods.WS_CHILD) == NativeMethods.WS_CHILD) {
             return null;
         }
 
-        var titleLength = NativeMethods.GetWindowTextLength(windowHandle);
+        int titleLength = NativeMethods.GetWindowTextLength(windowHandle);
         if (titleLength <= 0) {
             return null;
         }
 
-        var builder = new StringBuilder(titleLength + 1);
+        StringBuilder builder = new(titleLength + 1);
         _ = NativeMethods.GetWindowText(windowHandle, builder, builder.Capacity);
 
-        var title = builder.ToString().Trim();
+        string title = builder.ToString().Trim();
         if (string.IsNullOrWhiteSpace(title)) {
             return null;
         }
 
-        var processName = GetProcessName(processId);
+        string processName = GetProcessName(processId);
         return new WindowInfo(windowHandle, title, processId, processName);
     }
 
     private IntPtr RegisterHook(uint eventId) {
-        var hook = NativeMethods.SetWinEventHook(
+        nint hook = NativeMethods.SetWinEventHook(
             eventId,
             eventId,
             IntPtr.Zero,
@@ -157,11 +157,7 @@ public sealed class WindowMonitor : IDisposable {
             0,
             NativeMethods.WINEVENT_OUTOFCONTEXT);
 
-        if (hook == IntPtr.Zero) {
-            throw new InvalidOperationException($"WinEvent hook の登録に失敗しました: 0x{eventId:X}");
-        }
-
-        return hook;
+        return hook == IntPtr.Zero ? throw new InvalidOperationException($"WinEvent hook の登録に失敗しました: 0x{eventId:X}") : hook;
     }
 
     private void OnWinEvent(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint idEventThread, uint dwmsEventTime) {
@@ -173,13 +169,13 @@ public sealed class WindowMonitor : IDisposable {
             return;
         }
 
-        if (eventType == NativeMethods.EVENT_OBJECT_CREATE || eventType == NativeMethods.EVENT_OBJECT_SHOW) {
-            var windowInfo = TryCreateWindowInfo(hwnd);
+        if (eventType is NativeMethods.EVENT_OBJECT_CREATE or NativeMethods.EVENT_OBJECT_SHOW or NativeMethods.EVENT_OBJECT_NAMECHANGE) {
+            WindowInfo? windowInfo = TryCreateWindowInfo(hwnd);
             if (windowInfo is not null) {
                 WindowAdded?.Invoke(this, windowInfo);
             }
-        } else if (eventType == NativeMethods.EVENT_OBJECT_DESTROY || eventType == NativeMethods.EVENT_OBJECT_HIDE) {
-            var windowInfo = new WindowInfo(hwnd);
+        } else if (eventType is NativeMethods.EVENT_OBJECT_DESTROY or NativeMethods.EVENT_OBJECT_HIDE) {
+            WindowInfo windowInfo = new(hwnd);
             WindowRemoved?.Invoke(this, windowInfo);
         }
     }
@@ -188,7 +184,7 @@ public sealed class WindowMonitor : IDisposable {
 
     private static string GetProcessName(uint processId) {
         try {
-            using var process = Process.GetProcessById((int)processId);
+            using Process process = Process.GetProcessById((int)processId);
             return process.ProcessName;
         } catch {
             return string.Empty;
@@ -200,6 +196,7 @@ public sealed class WindowMonitor : IDisposable {
         internal const uint EVENT_OBJECT_DESTROY = 0x8001;
         internal const uint EVENT_OBJECT_SHOW = 0x8002;
         internal const uint EVENT_OBJECT_HIDE = 0x8003;
+        internal const uint EVENT_OBJECT_NAMECHANGE = 0x800C;
 
         internal const uint WINEVENT_OUTOFCONTEXT = 0x0000;
         internal const int OBJID_WINDOW = 0;

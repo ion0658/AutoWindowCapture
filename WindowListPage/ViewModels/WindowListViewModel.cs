@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using CommunityToolkit.Mvvm.ComponentModel;
 using WindowEnumerator;
 using WindowListPage.Services;
 
@@ -24,7 +24,7 @@ public sealed partial class WindowListViewModel : ObservableObject {
         _observer.WindowRemoved += (sender, window) => OnWindowRemoved(window);
 
         Windows.CollectionChanged += (sender, args) => {
-            var selected_window = SelectedWindow;
+            WindowInfo? selected_window = SelectedWindow;
             if (selected_window == null) {
                 return;
             }
@@ -44,29 +44,35 @@ public sealed partial class WindowListViewModel : ObservableObject {
         }
 
         _recordingWindowLauncher?.OpenOrActivate(value);
+        _selectedWindow = null;
     }
 
     public void SetWindows(IEnumerable<WindowInfo> windows) {
         Windows.Clear();
-        foreach (var window in windows) {
+        foreach (WindowInfo window in windows) {
             Debug.WriteLine($"Window: {window.Title} (Handle: {window.Handle}, Process: {window.ProcessName})");
             Windows.Add(window);
         }
     }
 
     private void OnWindowAdded(WindowInfo window) {
-        if (Windows.Any(w => w.Handle == window.Handle)) {
-            return;
+        WindowInfo? existingWindow = Windows.FirstOrDefault(w => w.Handle == window.Handle);
+        if (existingWindow is null) {
+            Debug.WriteLine($"Window Added: {window.Title} (Handle: {window.Handle}, Process: {window.ProcessName})");
+            Windows.Add(window);
+        } else {
+            Debug.WriteLine($"Current Window: {existingWindow.Title} (Handle: {existingWindow.Handle}, Process: {existingWindow.ProcessName})");
+            Debug.WriteLine($"Window Updated: {window.Title} (Handle: {window.Handle}, Process: {window.ProcessName})");
+            Windows[Windows.IndexOf(existingWindow)] = window;
         }
-        Debug.WriteLine($"Window Added: {window.Title} (Handle: {window.Handle}, Process: {window.ProcessName})");
-        Windows.Add(window);
+
     }
 
     private void OnWindowRemoved(WindowInfo window) {
-        var existingWindow = Windows.FirstOrDefault(w => w.Handle == window.Handle);
+        WindowInfo? existingWindow = Windows.FirstOrDefault(w => w.Handle == window.Handle);
         if (existingWindow != null) {
             Debug.WriteLine($"Window Removed: {window.Title} (Handle: {window.Handle}, Process: {window.ProcessName})");
-            Windows.Remove(existingWindow);
+            _ = Windows.Remove(existingWindow);
         }
     }
 }

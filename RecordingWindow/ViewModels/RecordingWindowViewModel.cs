@@ -13,7 +13,8 @@ using Windows.Graphics.Capture;
 
 namespace RecordingWindow.ViewModels;
 
-public sealed partial class RecordingWindowViewModel : ObservableObject, IDisposable {
+public sealed partial class RecordingWindowViewModel : ObservableObject, IDisposable
+{
     private readonly ConfigManagerService _configManager = new();
     private readonly DispatcherQueue _dispatcherQueue;
 
@@ -34,7 +35,10 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
     private readonly WindowInfo _windowInfo;
     private MediaRenderer.MediaRenderer? _mediaRenderer = null;
 
-    public RecordingWindowViewModel(WindowInfo targetWindow, CanvasDevice device, DispatcherQueue dispatcher) {
+
+
+    public RecordingWindowViewModel(WindowInfo targetWindow, CanvasDevice device, DispatcherQueue dispatcher)
+    {
         _dispatcherQueue = dispatcher;
         _windowInfo = targetWindow;
         _device = device;
@@ -45,25 +49,31 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
         _swapChain = new CanvasSwapChain(_device, _captureItem.Size.Width, _captureItem.Size.Height, 96) ?? throw new InvalidOperationException("Failed to create swap chain.");
     }
 
-    private void OnCaptureStopped() {
-        if (SwapChain is not null) {
+    private void OnCaptureStopped()
+    {
+        if (SwapChain is not null)
+        {
             using (CanvasDrawingSession ds = SwapChain.CreateDrawingSession(Microsoft.UI.Colors.Transparent)) { }
             SwapChain.Present();
         }
 
-        if (IsRecording && _mediaRenderer is not null) {
+        if (IsRecording && _mediaRenderer is not null)
+        {
             _ = ClickCapture();
         }
         CloseRequested?.Invoke();
     }
 
-    private void OnFrameArrived(Direct3D11CaptureFrame frame) {
-        if (frame is null || SwapChain is null) {
+    private void OnFrameArrived(Direct3D11CaptureFrame frame)
+    {
+        if (frame is null || SwapChain is null)
+        {
             return;
         }
 
         using (CanvasDrawingSession ds = SwapChain.CreateDrawingSession(Microsoft.UI.Colors.Transparent))
-        using (CanvasBitmap bitmap = CanvasBitmap.CreateFromDirect3D11Surface(_device, frame.Surface)) {
+        using (CanvasBitmap bitmap = CanvasBitmap.CreateFromDirect3D11Surface(_device, frame.Surface))
+        {
             Size target_size = SwapChain.Size;
             Size source_size = bitmap.Size;
 
@@ -80,32 +90,35 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
 
         SwapChain.Present();
 
-        if (IsRecording) {
+        if (IsRecording)
+        {
             _mediaRenderer?.PutFrame(frame);
         }
     }
 
-    private void OnAudioFrameArrived(byte[] pcmData, long qpcPosition) {
-        Debug.WriteLine($"Audio frame arrived: {pcmData.Length} bytes at position {qpcPosition}");
-    }
-
     [RelayCommand]
-    private async Task ClickCapture() {
-        if (IsRecording && _mediaRenderer is not null) {
+    private async Task ClickCapture()
+    {
+        if (IsRecording && _mediaRenderer is not null)
+        {
             Debug.WriteLine("Stop recording...");
             await _mediaRenderer.StopAsync();
             _mediaRenderer?.Dispose();
             _mediaRenderer = null;
-        } else if (!IsRecording) {
+        }
+        else if (!IsRecording)
+        {
             Debug.WriteLine("Start recording...");
             _mediaRenderer = new MediaRenderer.MediaRenderer(_captureItem, _windowInfo.ProcessName, _configManager.Load());
         }
-        _ = _dispatcherQueue.TryEnqueue(() => {
+        _ = _dispatcherQueue.TryEnqueue(() =>
+        {
             IsRecording = !IsRecording;
         });
     }
 
-    public void Dispose() {
+    public void Dispose()
+    {
         SwapChain?.Dispose();
         SwapChain = null;
         _mediaRenderer?.Dispose();

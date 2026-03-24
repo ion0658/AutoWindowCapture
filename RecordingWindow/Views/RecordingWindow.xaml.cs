@@ -5,11 +5,13 @@ using WindowEnumerator;
 
 namespace RecordingWindow.Views;
 
-public sealed partial class RecordingWindow : Window {
+public sealed partial class RecordingWindow : Window
+{
 
     public readonly RecordingWindowViewModel vm;
 
-    public RecordingWindow(WindowInfo targetWindow) {
+    public RecordingWindow(WindowInfo targetWindow)
+    {
         InitializeComponent();
 
         Title = $"Recording - {targetWindow.ProcessName}";

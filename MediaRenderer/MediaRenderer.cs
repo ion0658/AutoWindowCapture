@@ -14,7 +14,8 @@ using Windows.Storage.Streams;
 
 namespace MediaRenderer;
 
-public sealed partial class MediaRenderer : IDisposable {
+public sealed partial class MediaRenderer : IDisposable
+{
 
     private MediaStreamSource? _mediaStreamSource = null;
     private MediaStreamSourceSampleRequest? _pendingRequest = null;
@@ -26,20 +27,25 @@ public sealed partial class MediaRenderer : IDisposable {
     private readonly Task? _transcodeTask = null;
     private TimeSpan _firstFrameTime = TimeSpan.Zero;
 
-    public MediaRenderer(GraphicsCaptureItem item, string process_name, AppConfig config) {
+    public MediaRenderer(GraphicsCaptureItem item, string process_name, AppConfig config)
+    {
         _transcodeTask = Start(item, process_name, config);
     }
 
-    private VideoEncodingQuality GetVideoEncodingQuality(SizeUInt32 size) {
-        return size.Height switch {
+    private VideoEncodingQuality GetVideoEncodingQuality(SizeUInt32 size)
+    {
+        return size.Height switch
+        {
             >= 2160 => VideoEncodingQuality.Uhd2160p,
             >= 1080 => VideoEncodingQuality.HD1080p,
             _ => VideoEncodingQuality.Auto,
         };
     }
 
-    private async Task Start(GraphicsCaptureItem item, string process_name, AppConfig config) {
-        SizeUInt32 dst_size = config.RecordingResolution switch {
+    private async Task Start(GraphicsCaptureItem item, string process_name, AppConfig config)
+    {
+        SizeUInt32 dst_size = config.RecordingResolution switch
+        {
             { Width: 0, Height: 0 } => new SizeUInt32((uint)item.Size.Width, (uint)item.Size.Height),
             { Width: var w, Height: var h } => new SizeUInt32((uint)w, (uint)h)
         };
@@ -47,7 +53,8 @@ public sealed partial class MediaRenderer : IDisposable {
         VideoEncodingProperties sourceVideoProps = VideoEncodingProperties.CreateUncompressed(MediaEncodingSubtypes.Bgra8, (uint)item.Size.Width, (uint)item.Size.Height);
         VideoStreamDescriptor videoDescriptor = new(sourceVideoProps);
 
-        _mediaStreamSource = new MediaStreamSource(videoDescriptor) {
+        _mediaStreamSource = new MediaStreamSource(videoDescriptor)
+        {
             BufferTime = TimeSpan.Zero,
             IsLive = true,
         };
@@ -85,16 +92,20 @@ public sealed partial class MediaRenderer : IDisposable {
         PrepareTranscodeResult prepareResult = await transcoder.PrepareMediaStreamSourceTranscodeAsync(
             _mediaStreamSource, _outputStream, encodingProfile);
 
-        if (!prepareResult.CanTranscode) {
+        if (!prepareResult.CanTranscode)
+        {
             throw new InvalidOperationException($"Cannot transcode: {prepareResult.FailureReason}");
         }
         await prepareResult.TranscodeAsync();
     }
 
-    public async Task StopAsync() {
+    public async Task StopAsync()
+    {
         Debug.WriteLine("Stopping MediaRenderer...");
-        lock (_frameLock) {
-            if (_pendingRequest != null) {
+        lock (_frameLock)
+        {
+            if (_pendingRequest != null)
+            {
                 _pendingRequest.Sample = null;
                 _pendingRequest = null;
                 _pendingDeferral?.Complete();
@@ -102,7 +113,8 @@ public sealed partial class MediaRenderer : IDisposable {
             }
         }
         _ = _sampleChannel.Writer.TryComplete();
-        if (_transcodeTask != null) {
+        if (_transcodeTask != null)
+        {
             Debug.WriteLine("Waiting for transcoding to complete...");
             await _transcodeTask;
             Debug.WriteLine("Transcoding completed.");
@@ -111,14 +123,18 @@ public sealed partial class MediaRenderer : IDisposable {
         Debug.WriteLine("MediaRenderer stopped and resources disposed.");
     }
 
-    public void PutFrame(Direct3D11CaptureFrame frame) {
-        if (_firstFrameTime == TimeSpan.Zero) {
+    public void PutFrame(Direct3D11CaptureFrame frame)
+    {
+        if (_firstFrameTime == TimeSpan.Zero)
+        {
             _firstFrameTime = frame.SystemRelativeTime;
         }
         TimeSpan frame_time = frame.SystemRelativeTime - _firstFrameTime;
         MediaStreamSample sample = MediaStreamSample.CreateFromDirect3D11Surface(frame.Surface, frame_time);
-        lock (_frameLock) {
-            if (_pendingRequest != null) {
+        lock (_frameLock)
+        {
+            if (_pendingRequest != null)
+            {
                 _pendingRequest.Sample = sample;
                 _pendingRequest = null;
                 _pendingDeferral?.Complete();
@@ -129,25 +145,34 @@ public sealed partial class MediaRenderer : IDisposable {
         _ = _sampleChannel.Writer.TryWrite(sample);
     }
 
-    private void OnMediaStreamSourceStarting(MediaStreamSource sender, MediaStreamSourceStartingEventArgs args) {
+    private void OnMediaStreamSourceStarting(MediaStreamSource sender, MediaStreamSourceStartingEventArgs args)
+    {
         Debug.WriteLine("MediaStreamSource Starting");
         args.Request.SetActualStartPosition(TimeSpan.Zero);
     }
 
-    private void OnSampleRequested(MediaStreamSource sender, MediaStreamSourceSampleRequestedEventArgs args) {
-        if (_sampleChannel.Reader.TryRead(out MediaStreamSample? sample)) {
+    private void OnSampleRequested(MediaStreamSource sender, MediaStreamSourceSampleRequestedEventArgs args)
+    {
+        if (_sampleChannel.Reader.TryRead(out MediaStreamSample? sample))
+        {
             args.Request.Sample = sample;
-        } else if (_sampleChannel.Reader.Completion.IsCompleted) {
+        }
+        else if (_sampleChannel.Reader.Completion.IsCompleted)
+        {
             args.Request.Sample = null;
-        } else {
-            lock (_frameLock) {
+        }
+        else
+        {
+            lock (_frameLock)
+            {
                 _pendingDeferral = args.Request.GetDeferral();
                 _pendingRequest = args.Request;
             }
         }
     }
 
-    public void Dispose() {
+    public void Dispose()
+    {
         _ = StopAsync();
     }
 }

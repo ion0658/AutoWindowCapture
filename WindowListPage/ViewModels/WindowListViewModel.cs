@@ -11,7 +11,8 @@ using WindowListPage.Services;
 
 namespace WindowListPage.ViewModels;
 
-public sealed partial class WindowListViewModel : ObservableObject, IDisposable {
+public sealed partial class WindowListViewModel : ObservableObject, IDisposable
+{
     private readonly WindowMonitor _observer = new();
     private IRecordingWindowLauncher? _recordingWindowLauncher;
 
@@ -24,14 +25,17 @@ public sealed partial class WindowListViewModel : ObservableObject, IDisposable 
     private WindowInfo? _selectedWindow = null;
 
 
-    public WindowListViewModel(DispatcherQueue dispatcher) {
+    public WindowListViewModel(DispatcherQueue dispatcher)
+    {
         _dispatcher = dispatcher;
         _observer.WindowAdded += (sender, window) => OnWindowAdded(window);
         _observer.WindowRemoved += (sender, window) => OnWindowRemoved(window);
 
-        Windows.CollectionChanged += (sender, args) => {
+        Windows.CollectionChanged += (sender, args) =>
+        {
             WindowInfo? selected_window = SelectedWindow;
-            if (selected_window == null) {
+            if (selected_window == null)
+            {
                 return;
             }
             SelectedWindow = Windows.Contains(selected_window) ? selected_window : null;
@@ -40,16 +44,20 @@ public sealed partial class WindowListViewModel : ObservableObject, IDisposable 
         _ = Task.Run(() => { SetWindows(_observer.EnumerateWindows()); });
     }
 
-    public void Dispose() {
+    public void Dispose()
+    {
         _observer.Dispose();
     }
 
-    public void SetRecordingWindowLauncher(IRecordingWindowLauncher launcher) {
+    public void SetRecordingWindowLauncher(IRecordingWindowLauncher launcher)
+    {
         _recordingWindowLauncher = launcher;
     }
 
-    partial void OnSelectedWindowChanged(WindowInfo? value) {
-        if (value is null) {
+    partial void OnSelectedWindowChanged(WindowInfo? value)
+    {
+        if (value is null)
+        {
             return;
         }
 
@@ -57,20 +65,27 @@ public sealed partial class WindowListViewModel : ObservableObject, IDisposable 
         _selectedWindow = null;
     }
 
-    public void SetWindows(IEnumerable<WindowInfo> windows) {
-        foreach (WindowInfo window in windows) {
+    public void SetWindows(IEnumerable<WindowInfo> windows)
+    {
+        foreach (WindowInfo window in windows)
+        {
             Debug.WriteLine($"Window: {window.Title} (Handle: {window.Handle}, Process: {window.ProcessName})");
             OnWindowAdded(window);
         }
     }
 
-    private void OnWindowAdded(WindowInfo window) {
-        _ = _dispatcher.TryEnqueue(() => {
+    private void OnWindowAdded(WindowInfo window)
+    {
+        _ = _dispatcher.TryEnqueue(() =>
+        {
             WindowInfo? existingWindow = Windows.FirstOrDefault(w => w.Handle == window.Handle);
-            if (existingWindow is null) {
+            if (existingWindow is null)
+            {
                 Debug.WriteLine($"Window Added: {window.Title} (Handle: {window.Handle}, Process: {window.ProcessName})");
                 Windows.Add(window);
-            } else {
+            }
+            else
+            {
                 Debug.WriteLine($"Window Updated: {window.Title} (Handle: {window.Handle}, Process: {window.ProcessName})");
                 Debug.WriteLine($"Old Window: {existingWindow.Title} (Handle: {existingWindow.Handle}, Process: {existingWindow.ProcessName})");
                 Windows[Windows.IndexOf(existingWindow)] = window;
@@ -78,10 +93,13 @@ public sealed partial class WindowListViewModel : ObservableObject, IDisposable 
         });
     }
 
-    private void OnWindowRemoved(WindowInfo window) {
-        _ = _dispatcher.TryEnqueue(() => {
+    private void OnWindowRemoved(WindowInfo window)
+    {
+        _ = _dispatcher.TryEnqueue(() =>
+        {
             WindowInfo? existingWindow = Windows.FirstOrDefault(w => w.Handle == window.Handle);
-            if (existingWindow != null) {
+            if (existingWindow != null)
+            {
                 Debug.WriteLine($"Window Removed: {window.Title} (Handle: {window.Handle}, Process: {window.ProcessName})");
                 _ = Windows.Remove(existingWindow);
             }

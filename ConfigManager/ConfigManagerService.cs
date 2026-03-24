@@ -8,9 +8,11 @@ using System.Text.Json.Serialization;
 
 namespace ConfigManager;
 
-public sealed class ConfigManagerService {
+public sealed class ConfigManagerService
+{
     private const string ConfigFileName = "config.json";
-    private static readonly JsonSerializerOptions JsonOptions = new() {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
         WriteIndented = true,
         Converters = { new JsonStringEnumConverter() }
     };
@@ -23,23 +25,29 @@ public sealed class ConfigManagerService {
 
     private static string DefaultRecordingSaveDirectory => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyVideos), AppName);
 
-    public AppConfig Load() {
+    public AppConfig Load()
+    {
         _ = Directory.CreateDirectory(AppDirectoryPath);
 
-        if (!File.Exists(ConfigFilePath)) {
+        if (!File.Exists(ConfigFilePath))
+        {
             return CreateDefault();
         }
 
-        try {
+        try
+        {
             string json = File.ReadAllText(ConfigFilePath);
             AppConfig? config = JsonSerializer.Deserialize<AppConfig>(json, JsonOptions);
             return Normalize(config ?? CreateDefault());
-        } catch {
+        }
+        catch
+        {
             return CreateDefault();
         }
     }
 
-    public void Save(AppConfig config) {
+    public void Save(AppConfig config)
+    {
         AppConfig normalized = Normalize(config);
 
         _ = Directory.CreateDirectory(AppDirectoryPath);
@@ -49,8 +57,10 @@ public sealed class ConfigManagerService {
         File.WriteAllText(ConfigFilePath, json);
     }
 
-    private static AppConfig CreateDefault() {
-        return new AppConfig {
+    private static AppConfig CreateDefault()
+    {
+        return new AppConfig
+        {
             RecordingSaveDirectory = DefaultRecordingSaveDirectory,
             AutoRecordingExecutableNames = [],
             RecordingCodec = RecordingCodec.H264,
@@ -58,12 +68,14 @@ public sealed class ConfigManagerService {
         };
     }
 
-    private static AppConfig Normalize(AppConfig config) {
+    private static AppConfig Normalize(AppConfig config)
+    {
         string configuredPath = string.IsNullOrWhiteSpace(config.RecordingSaveDirectory)
             ? DefaultRecordingSaveDirectory
             : config.RecordingSaveDirectory.Trim();
 
-        if (!Path.IsPathRooted(configuredPath)) {
+        if (!Path.IsPathRooted(configuredPath))
+        {
             configuredPath = Path.Combine(AppDirectoryPath, configuredPath);
         }
 
@@ -77,7 +89,8 @@ public sealed class ConfigManagerService {
             ? config.RecordingResolution
             : RecordingFormatOptions.ToSize(RecordingResolutionPreset.Source);
 
-        return new AppConfig {
+        return new AppConfig
+        {
             RecordingSaveDirectory = fullPath,
             AutoRecordingExecutableNames = [.. config.AutoRecordingExecutableNames
                 .Where(x => !string.IsNullOrWhiteSpace(x))

@@ -10,7 +10,8 @@ using System.Linq;
 
 namespace ConfigPage.ViewModels;
 
-public sealed partial class ConfigPageViewModel : ObservableObject {
+public sealed partial class ConfigPageViewModel : ObservableObject
+{
     private readonly ConfigManagerService _configManager = new();
 
     [ObservableProperty]
@@ -22,46 +23,57 @@ public sealed partial class ConfigPageViewModel : ObservableObject {
     [ObservableProperty]
     private RecordingResolutionPreset _selectedRecordingResolution = RecordingResolutionPreset.Source;
 
-    public string? SelectedExecutableName {
+    public string? SelectedExecutableName
+    {
         get;
         set => SetProperty(ref field, value);
     }
 
     public ObservableCollection<string> AutoRecordingExecutableNames { get; } = [];
 
-    public ConfigPageViewModel() {
+    public ConfigPageViewModel()
+    {
         AutoRecordingExecutableNames.CollectionChanged += OnAutoRecordingExecutableNamesChanged;
     }
 
-    partial void OnRecordingSaveDirectoryChanged(string value) {
+    partial void OnRecordingSaveDirectoryChanged(string value)
+    {
         SaveConfig();
     }
 
-    partial void OnSelectedRecordingCodecChanged(RecordingCodec value) {
+    partial void OnSelectedRecordingCodecChanged(RecordingCodec value)
+    {
         SaveConfig();
     }
 
-    partial void OnSelectedRecordingResolutionChanged(RecordingResolutionPreset value) {
+    partial void OnSelectedRecordingResolutionChanged(RecordingResolutionPreset value)
+    {
         SaveConfig();
     }
 
-    public void LoadConfig() {
-        lock (_configManager) {
+    public void LoadConfig()
+    {
+        lock (_configManager)
+        {
             AppConfig config = _configManager.Load();
             RecordingSaveDirectory = config.RecordingSaveDirectory;
             SelectedRecordingCodec = config.RecordingCodec;
             SelectedRecordingResolution = RecordingFormatOptions.ToPreset(config.RecordingResolution);
 
             AutoRecordingExecutableNames.Clear();
-            foreach (string executableName in config.AutoRecordingExecutableNames) {
+            foreach (string executableName in config.AutoRecordingExecutableNames)
+            {
                 AutoRecordingExecutableNames.Add(executableName);
             }
         }
     }
 
-    private void SaveConfig() {
-        lock (_configManager) {
-            AppConfig config = new() {
+    private void SaveConfig()
+    {
+        lock (_configManager)
+        {
+            AppConfig config = new()
+            {
                 RecordingSaveDirectory = RecordingSaveDirectory,
                 AutoRecordingExecutableNames = [.. AutoRecordingExecutableNames],
                 RecordingCodec = SelectedRecordingCodec,
@@ -73,8 +85,10 @@ public sealed partial class ConfigPageViewModel : ObservableObject {
     }
 
     [RelayCommand]
-    private void RemoveSelectedExecutable() {
-        if (string.IsNullOrWhiteSpace(SelectedExecutableName)) {
+    private void RemoveSelectedExecutable()
+    {
+        if (string.IsNullOrWhiteSpace(SelectedExecutableName))
+        {
             return;
         }
 
@@ -82,23 +96,28 @@ public sealed partial class ConfigPageViewModel : ObservableObject {
         SelectedExecutableName = null;
     }
 
-    public void SetRecordingSaveDirectory(string directoryPath) {
+    public void SetRecordingSaveDirectory(string directoryPath)
+    {
         RecordingSaveDirectory = directoryPath;
     }
 
-    public void AddExecutableNames(IEnumerable<string> executableNames) {
+    public void AddExecutableNames(IEnumerable<string> executableNames)
+    {
         foreach (string executableName in executableNames
             .Where(x => !string.IsNullOrWhiteSpace(x))
             .Select(x => x.Trim())
-            .Distinct(StringComparer.OrdinalIgnoreCase)) {
+            .Distinct(StringComparer.OrdinalIgnoreCase))
+        {
 
-            if (!AutoRecordingExecutableNames.Any(x => string.Equals(x, executableName, StringComparison.OrdinalIgnoreCase))) {
+            if (!AutoRecordingExecutableNames.Any(x => string.Equals(x, executableName, StringComparison.OrdinalIgnoreCase)))
+            {
                 AutoRecordingExecutableNames.Add(executableName);
             }
         }
     }
 
-    private void OnAutoRecordingExecutableNamesChanged(object? sender, NotifyCollectionChangedEventArgs e) {
+    private void OnAutoRecordingExecutableNamesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
         SaveConfig();
     }
 }

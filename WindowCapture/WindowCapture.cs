@@ -9,7 +9,8 @@ namespace WindowCapture;
 public delegate void FrameArrivedHandler(Direct3D11CaptureFrame frame);
 public delegate void CaptureStoppedHandler();
 
-public sealed class WindowCapture : IDisposable {
+public sealed class WindowCapture : IDisposable
+{
     private static readonly DirectXPixelFormat PIX_FORMAT = DirectXPixelFormat.B8G8R8A8UIntNormalized;
     private static readonly int NUM_OF_BUFFERS = 2;
 
@@ -22,7 +23,8 @@ public sealed class WindowCapture : IDisposable {
     public event FrameArrivedHandler? FrameArrived;
     public event CaptureStoppedHandler? CaptureStopped;
 
-    public WindowCapture(IDirect3DDevice device, GraphicsCaptureItem item) {
+    public WindowCapture(IDirect3DDevice device, GraphicsCaptureItem item)
+    {
         _device = device;
         _captureItem = item;
 
@@ -36,17 +38,21 @@ public sealed class WindowCapture : IDisposable {
         _session.StartCapture();
     }
 
-    private void StopCapture() {
+    private void StopCapture()
+    {
         _session?.Dispose();
         _framePool?.Dispose();
     }
 
-    private void OnFrameArrived(Direct3D11CaptureFramePool sender, object args) {
+    private void OnFrameArrived(Direct3D11CaptureFramePool sender, object args)
+    {
         using Direct3D11CaptureFrame frame = sender.TryGetNextFrame();
-        if (frame == null) {
+        if (frame == null)
+        {
             return;
         }
-        if (frame.ContentSize != _lastFrameSize) {
+        if (frame.ContentSize != _lastFrameSize)
+        {
             _lastFrameSize = frame.ContentSize;
             _framePool?.Recreate(_device, PIX_FORMAT, NUM_OF_BUFFERS, _lastFrameSize);
             return;
@@ -55,7 +61,8 @@ public sealed class WindowCapture : IDisposable {
         FrameArrived?.Invoke(frame);
     }
 
-    public void Dispose() {
+    public void Dispose()
+    {
         StopCapture();
     }
 

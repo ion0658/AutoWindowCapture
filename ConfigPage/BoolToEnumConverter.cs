@@ -4,13 +4,17 @@ using System;
 
 namespace ConfigPage;
 
-public class BoolToEnumConverter : IValueConverter {
-    public object? Convert(object? value, Type targetType, object? parameter, string culture) {
-        if ((value is null) || (parameter is not string ParameterString)) {
+public class BoolToEnumConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, string culture)
+    {
+        if ((value is null) || (parameter is not string ParameterString))
+        {
             return DependencyProperty.UnsetValue;
         }
 
-        if (Enum.IsDefined(value.GetType(), value) == false) {
+        if (Enum.IsDefined(value.GetType(), value) == false)
+        {
             return DependencyProperty.UnsetValue;
         }
 
@@ -19,7 +23,8 @@ public class BoolToEnumConverter : IValueConverter {
         return (int)paramvalue == (int)value;
     }
 
-    public object? ConvertBack(object? value, Type targetType, object? parameter, string culture) {
+    public object? ConvertBack(object? value, Type targetType, object? parameter, string culture)
+    {
         return parameter is not string ParameterString ? DependencyProperty.UnsetValue : Enum.Parse(targetType, ParameterString);
 
     }

@@ -1,4 +1,5 @@
-﻿using ConfigManager.Models;
+﻿using AudioCapture;
+using ConfigManager.Models;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -21,15 +22,16 @@ public sealed partial class MediaRenderer : IDisposable
     private MediaStreamSourceSampleRequest? _pendingRequest = null;
     private MediaStreamSourceSampleRequestDeferral? _pendingDeferral = null;
 
+    private readonly LoopbackAudioCapture _audioCapture = new();
     private readonly Channel<MediaStreamSample> _sampleChannel = Channel.CreateUnbounded<MediaStreamSample>();
     private readonly object _frameLock = new();
     private IRandomAccessStream? _outputStream = null;
     private readonly Task? _transcodeTask = null;
     private TimeSpan _firstFrameTime = TimeSpan.Zero;
 
-    public MediaRenderer(GraphicsCaptureItem item, string process_name, AppConfig config)
+    public MediaRenderer(GraphicsCaptureItem item, int proc_id, string process_name, AppConfig config)
     {
-        _transcodeTask = Start(item, process_name, config);
+        _transcodeTask = Start(item, proc_id, process_name, config);
     }
 
     private VideoEncodingQuality GetVideoEncodingQuality(SizeUInt32 size)
@@ -42,7 +44,7 @@ public sealed partial class MediaRenderer : IDisposable
         };
     }
 
-    private async Task Start(GraphicsCaptureItem item, string process_name, AppConfig config)
+    private async Task Start(GraphicsCaptureItem item, int proc_id, string process_name, AppConfig config)
     {
         SizeUInt32 dst_size = config.RecordingResolution switch
         {
@@ -50,6 +52,8 @@ public sealed partial class MediaRenderer : IDisposable
             { Width: var w, Height: var h } => new SizeUInt32((uint)w, (uint)h)
         };
 
+        _audioCapture.StartCapture(proc_id, OnPCMArrived);
+        var a_fmt = _audioCapture.CaptureFormat;
         VideoEncodingProperties sourceVideoProps = VideoEncodingProperties.CreateUncompressed(MediaEncodingSubtypes.Bgra8, (uint)item.Size.Width, (uint)item.Size.Height);
         VideoStreamDescriptor videoDescriptor = new(sourceVideoProps);
 
@@ -71,7 +75,6 @@ public sealed partial class MediaRenderer : IDisposable
         encodingProfile.Video!.Height = dst_size.Height;
         encodingProfile.Video!.FrameRate.Numerator = 60;
         encodingProfile.Video!.FrameRate.Denominator = 1;
-        encodingProfile.Audio = null;
 
         string startDate = DateTime.Now.ToString("yyyy-MM-dd");
         string startTime = DateTime.Now.ToString("HH-mm-ss");
@@ -120,6 +123,7 @@ public sealed partial class MediaRenderer : IDisposable
             Debug.WriteLine("Transcoding completed.");
         }
         _outputStream?.Dispose();
+        _audioCapture.StopCapture();
         Debug.WriteLine("MediaRenderer stopped and resources disposed.");
     }
 
@@ -143,6 +147,11 @@ public sealed partial class MediaRenderer : IDisposable
             }
         }
         _ = _sampleChannel.Writer.TryWrite(sample);
+    }
+
+    private void OnPCMArrived(byte[] pcmData, AudioFormat fmt)
+    {
+
     }
 
     private void OnMediaStreamSourceStarting(MediaStreamSource sender, MediaStreamSourceStartingEventArgs args)

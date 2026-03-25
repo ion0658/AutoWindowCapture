@@ -107,7 +107,7 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
         else if (!IsRecording)
         {
             Debug.WriteLine("Start recording...");
-            _mediaRenderer = new MediaRenderer.MediaRenderer(_captureItem, _windowInfo.ProcessName, _configManager.Load());
+            _mediaRenderer = new MediaRenderer.MediaRenderer(_captureItem, (int)_windowInfo.ProcessId, _windowInfo.ProcessName, _configManager.Load());
         }
         _ = _dispatcherQueue.TryEnqueue(() =>
         {

@@ -11,11 +11,16 @@ class CLoopbackCapture
                           FtmBase,
                           IActivateAudioInterfaceCompletionHandler> {
    public:
+    using PcmDataCallback =
+        std::function<void(const BYTE* data, UINT32 byteCount)>;
+
     CLoopbackCapture() = default;
     ~CLoopbackCapture();
 
-    HRESULT StartCaptureAsync(DWORD processId, PCWSTR outputFileName);
+    HRESULT StartCaptureAsync(DWORD processId, PcmDataCallback callback);
     HRESULT StopCaptureAsync();
+
+    const WAVEFORMATEX& GetCaptureFormat() const { return m_CaptureFormat; }
 
     METHODASYNCCALLBACK(CLoopbackCapture, StartCapture, OnStartCapture);
     METHODASYNCCALLBACK(CLoopbackCapture, StopCapture, OnStopCapture);
@@ -27,8 +32,6 @@ class CLoopbackCapture
         IActivateAudioInterfaceAsyncOperation* operation);
 
    private:
-    // NB: All states >= Initialized will allow some methods
-    // to be called successfully on the Audio Client
     enum class DeviceState {
         Uninitialized,
         Error,
@@ -45,8 +48,6 @@ class CLoopbackCapture
     HRESULT OnSampleReady(IMFAsyncResult* pResult);
 
     HRESULT InitializeLoopbackCapture();
-    HRESULT CreateWAVFile();
-    HRESULT FixWAVHeader();
     HRESULT OnAudioSampleRequested();
 
     HRESULT ActivateAudioInterface(DWORD processId);
@@ -62,15 +63,11 @@ class CLoopbackCapture
 
     wil::unique_event_nothrow m_SampleReadyEvent;
     MFWORKITEM_KEY m_SampleReadyKey = 0;
-    wil::unique_hfile m_hFile;
     wil::critical_section m_CritSec;
     DWORD m_dwQueueID = 0;
-    DWORD m_cbHeaderSize = 0;
-    DWORD m_cbDataSize = 0;
 
-    // These two members are used to communicate between the main thread
-    // and the ActivateCompleted callback.
-    PCWSTR m_outputFileName = nullptr;
+    PcmDataCallback m_dataCallback;
+
     HRESULT m_activateResult = E_UNEXPECTED;
 
     DeviceState m_DeviceState{DeviceState::Uninitialized};

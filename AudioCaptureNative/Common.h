@@ -13,12 +13,8 @@
                                  offsetof(Parent, m_x##AsyncCallback)))),    \
               _dwQueueID(MFASYNC_CALLBACK_QUEUE_MULTITHREADED) {}            \
                                                                              \
-        STDMETHOD_(ULONG, AddRef)() {                                        \
-            return _parent->AddRef();                                        \
-        }                                                                    \
-        STDMETHOD_(ULONG, Release)() {                                       \
-            return _parent->Release();                                       \
-        }                                                                    \
+        STDMETHOD_(ULONG, AddRef)() { return _parent->AddRef(); }            \
+        STDMETHOD_(ULONG, Release)() { return _parent->Release(); }          \
         STDMETHOD(QueryInterface)(REFIID riid, void** ppvObject) {           \
             if (riid == IID_IMFAsyncCallback || riid == IID_IUnknown) {      \
                 (*ppvObject) = this;                                         \
@@ -38,9 +34,7 @@
             _parent->pfnCallback(pResult);                                   \
             return S_OK;                                                     \
         }                                                                    \
-        void SetQueueID(DWORD dwQueueID) {                                   \
-            _dwQueueID = dwQueueID;                                          \
-        }                                                                    \
+        void SetQueueID(DWORD dwQueueID) { _dwQueueID = dwQueueID; }         \
                                                                              \
        protected:                                                            \
         Parent* _parent;                                                     \
@@ -48,3 +42,4 @@
                                                                              \
     } m_x##AsyncCallback;
 #endif
+

@@ -10,7 +10,6 @@ using WindowCapture;
 using WindowEnumerator;
 using Windows.Foundation;
 using Windows.Graphics.Capture;
-using AudioCapture;
 
 namespace RecordingWindow.ViewModels;
 
@@ -36,8 +35,6 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
     private readonly WindowInfo _windowInfo;
     private MediaRenderer.MediaRenderer? _mediaRenderer = null;
 
-    private readonly LoopbackAudioCapture _audioCapture = new();
-
     public RecordingWindowViewModel(WindowInfo targetWindow, CanvasDevice device, DispatcherQueue dispatcher)
     {
         _dispatcherQueue = dispatcher;
@@ -48,11 +45,6 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
         _capture.FrameArrived += OnFrameArrived;
         _capture.CaptureStopped += OnCaptureStopped;
         _swapChain = new CanvasSwapChain(_device, _captureItem.Size.Width, _captureItem.Size.Height, 96) ?? throw new InvalidOperationException("Failed to create swap chain.");
-        if (!_audioCapture.Initialize((int)targetWindow.ProcessId, false))
-        {
-            Debug.WriteLine("Failed to initialize audio capture.");
-        }
-        _audioCapture.StartCapture(OnAudioDataArrived);
     }
 
     private void OnCaptureStopped()
@@ -102,12 +94,6 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
         }
     }
 
-    private void OnAudioDataArrived(byte[] audio_data, AudioFormat fmt)
-    {
-        Debug.WriteLine($"Audio format: {fmt.SampleRate} Hz, {fmt.BitsPerSample} bits, {fmt.Channels} channels");
-        Debug.WriteLine($"Audio data arrived: {audio_data.Length} bytes");
-    }
-
     [RelayCommand]
     private async Task ClickCapture()
     {
@@ -136,8 +122,6 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
         _mediaRenderer?.Dispose();
         _mediaRenderer = null;
         _capture.Dispose();
-        _audioCapture.StopCapture();
-        _audioCapture.Dispose();
     }
 }
 

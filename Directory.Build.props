@@ -11,9 +11,9 @@
         <SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
         <TargetPlatformMinVersion>10.0.26100.0</TargetPlatformMinVersion>
 
-        <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutDir>
-        <BaseIntermediateOutputPath>$(SolutionDir)\obj\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-        <IntDir>$(SolutionDir)\obj\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
+        <OutDir>$(SolutionDir)\build\$(Platform)\$(Configuration)\bin\</OutDir>
+        <BaseIntermediateOutputPath>$(SolutionDir)\build\$(Platform)\$(Configuration)\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+        <IntDir>$(SolutionDir)\build\$(Platform)\$(Configuration)\obj\$(MSBuildProjectName)\</IntDir>
 
         <Deterministic>true</Deterministic>
         <Nullable>enable</Nullable>

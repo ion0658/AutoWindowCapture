@@ -6,13 +6,14 @@
         <InformationalVersion>0.1.0</InformationalVersion>
 
         <LangVersion>latest</LangVersion>
-        <PublishAot>False</PublishAot>
+        <PublishAot>false</PublishAot>
         <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
         <SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
         <TargetPlatformMinVersion>10.0.26100.0</TargetPlatformMinVersion>
 
         <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutDir>
         <BaseIntermediateOutputPath>$(SolutionDir)\obj\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+        <IntDir>$(SolutionDir)\obj\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
 
         <Deterministic>true</Deterministic>
         <Nullable>enable</Nullable>

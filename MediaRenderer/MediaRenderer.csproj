@@ -11,7 +11,6 @@
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260317003" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\AudioCapture\AudioCapture.vcxproj" />
 		<ProjectReference Include="..\ConfigManager\ConfigManager.csproj" />
 	</ItemGroup>
 </Project>

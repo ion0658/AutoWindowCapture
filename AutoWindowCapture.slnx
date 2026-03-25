@@ -5,65 +5,54 @@
     <Platform Name="x86" />
   </Configurations>
   <Project Path="AudioCapture/AudioCapture.vcxproj" />
+  <Project Path="AudioCaptureNative/AudioCaptureNative.vcxproj" Id="0d0d57cc-9a73-43a9-bf27-5125e05b7023" />
   <Project Path="AutoWindowCapture/AutoWindowCapture (Package)/AutoWindowCapture (Package).wapproj" Type="c7167f0d-bc9f-4e6e-afe1-012c56b48db5">
-    <Build Solution="*|ARM64" Project="false" />
-    <Build Solution="*|x64" Project="false" />
-    <Build Solution="Debug|x86" Project="false" />
-    <Deploy Solution="Release|x86" />
+    <Build Project="false" />
   </Project>
   <Project Path="AutoWindowCapture/AutoWindowCapture/AutoWindowCapture.csproj">
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
     <Platform Solution="*|x86" Project="x86" />
-    <Build Solution="Release|x86" Project="false" />
   </Project>
   <Project Path="Binding/Binding.csproj" Id="4e7fc386-028a-4a66-a550-0217953a9c41">
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
     <Platform Solution="Debug|x86" Project="x86" />
-    <Build Solution="*|x86" Project="false" />
   </Project>
   <Project Path="ConfigManager/ConfigManager.csproj">
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
     <Platform Solution="Debug|x86" Project="x86" />
-    <Build Solution="*|x86" Project="false" />
   </Project>
   <Project Path="ConfigPage/ConfigPage.csproj" Id="aa21e1ba-1bdd-4d23-b5fd-50cfabbe16c9">
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
     <Platform Solution="Debug|x86" Project="x86" />
-    <Build Solution="*|x86" Project="false" />
   </Project>
   <Project Path="MediaRenderer/MediaRenderer.csproj">
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
     <Platform Solution="Debug|x86" Project="x86" />
-    <Build Solution="*|x86" Project="false" />
   </Project>
   <Project Path="RecordingWindow/RecordingWindow.csproj">
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
     <Platform Solution="Debug|x86" Project="x86" />
-    <Build Solution="*|x86" Project="false" />
   </Project>
   <Project Path="WindowCapture/WindowCapture.csproj">
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
     <Platform Solution="Debug|x86" Project="x86" />
-    <Build Solution="*|x86" Project="false" />
   </Project>
   <Project Path="WindowEnumerator/WindowEnumerator.csproj">
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
     <Platform Solution="Debug|x86" Project="x86" />
-    <Build Solution="*|x86" Project="false" />
   </Project>
   <Project Path="WindowListPage/WindowListPage.csproj" Id="61ebfb6b-e19d-4b8d-a221-733231ec4d46">
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
     <Platform Solution="Debug|x86" Project="x86" />
-    <Build Solution="*|x86" Project="false" />
   </Project>
 </Solution>
 

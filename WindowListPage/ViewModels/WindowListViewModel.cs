@@ -1,9 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using ConfigManager;
 using Microsoft.UI.Dispatching;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WindowEnumerator;
@@ -13,6 +15,7 @@ namespace WindowListPage.ViewModels;
 
 public sealed partial class WindowListViewModel : ObservableObject, IDisposable
 {
+    private readonly ConfigManagerService _configManager = new();
     private readonly WindowMonitor _observer = new();
     private IRecordingWindowLauncher? _recordingWindowLauncher;
 
@@ -61,36 +64,50 @@ public sealed partial class WindowListViewModel : ObservableObject, IDisposable
             return;
         }
 
-        _recordingWindowLauncher?.OpenOrActivate(value);
+        _recordingWindowLauncher?.OpenOrActivate(value, false);
         _selectedWindow = null;
     }
 
     public void SetWindows(IEnumerable<WindowInfo> windows)
     {
-        foreach (WindowInfo window in windows)
+        _ = _dispatcher.TryEnqueue(() =>
         {
-            Debug.WriteLine($"Window: {window.Title} (Handle: {window.Handle}, Process: {window.ProcessName})");
-            OnWindowAdded(window);
-        }
+            foreach (WindowInfo window in windows)
+            {
+                Debug.WriteLine($"Window: {window.Title} (Handle: {window.Handle}, Process: {window.ProcessName})");
+                AddOrUpdateWindow(window);
+            }
+        });
     }
 
     private void OnWindowAdded(WindowInfo window)
     {
         _ = _dispatcher.TryEnqueue(() =>
         {
-            WindowInfo? existingWindow = Windows.FirstOrDefault(w => w.Handle == window.Handle);
-            if (existingWindow is null)
+            bool isNewWindow = AddOrUpdateWindow(window);
+            bool shouldAutoRecord = ShouldAutoRecord(window);
+            if (!isNewWindow || _recordingWindowLauncher is null || !shouldAutoRecord)
             {
-                Debug.WriteLine($"Window Added: {window.Title} (Handle: {window.Handle}, Process: {window.ProcessName})");
-                Windows.Add(window);
+                return;
             }
-            else
-            {
-                Debug.WriteLine($"Window Updated: {window.Title} (Handle: {window.Handle}, Process: {window.ProcessName})");
-                Debug.WriteLine($"Old Window: {existingWindow.Title} (Handle: {existingWindow.Handle}, Process: {existingWindow.ProcessName})");
-                Windows[Windows.IndexOf(existingWindow)] = window;
-            }
+            _recordingWindowLauncher.OpenOrActivate(window, shouldAutoRecord);
         });
+    }
+
+    private bool AddOrUpdateWindow(WindowInfo window)
+    {
+        WindowInfo? existingWindow = Windows.FirstOrDefault(w => w.Handle == window.Handle);
+        if (existingWindow is null)
+        {
+            Debug.WriteLine($"Window Added: {window.Title} (Handle: {window.Handle}, Process: {window.ProcessName})");
+            Windows.Add(window);
+            return true;
+        }
+
+        Debug.WriteLine($"Window Updated: {window.Title} (Handle: {window.Handle}, Process: {window.ProcessName})");
+        Debug.WriteLine($"Old Window: {existingWindow.Title} (Handle: {existingWindow.Handle}, Process: {existingWindow.ProcessName})");
+        Windows[Windows.IndexOf(existingWindow)] = window;
+        return false;
     }
 
     private void OnWindowRemoved(WindowInfo window)
@@ -104,6 +121,17 @@ public sealed partial class WindowListViewModel : ObservableObject, IDisposable
                 _ = Windows.Remove(existingWindow);
             }
         });
+    }
+
+    private bool ShouldAutoRecord(WindowInfo window)
+    {
+        if (string.IsNullOrWhiteSpace(window.ProcessName))
+        {
+            return false;
+        }
+        return _configManager.Load().AutoRecordingExecutableNames
+            .Select(static executableName => Path.GetFileNameWithoutExtension(Path.GetFileName(executableName.Trim())))
+            .Any(executableName => string.Equals(executableName, window.ProcessName, StringComparison.OrdinalIgnoreCase));
     }
 }
 

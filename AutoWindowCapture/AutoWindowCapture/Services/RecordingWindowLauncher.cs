@@ -9,19 +9,23 @@ public sealed class RecordingWindowLauncher : IRecordingWindowLauncher
 {
     private readonly Dictionary<IntPtr, RecordingWindow.Views.RecordingWindow> _windowsByHandle = [];
 
-    public void OpenOrActivate(WindowInfo windowInfo)
+    public void OpenOrActivate(WindowInfo windowInfo, bool recOnOpen)
+    {
+        RecordingWindow.Views.RecordingWindow recordingWindow = GetOrCreateWindow(windowInfo, recOnOpen);
+        recordingWindow.Activate();
+    }
+
+    private RecordingWindow.Views.RecordingWindow GetOrCreateWindow(WindowInfo windowInfo, bool recOnOpen)
     {
         if (_windowsByHandle.TryGetValue(windowInfo.Handle, out RecordingWindow.Views.RecordingWindow? existingWindow))
         {
-            existingWindow.Activate();
-            return;
+            return existingWindow;
         }
 
-        RecordingWindow.Views.RecordingWindow recordingWindow = new(windowInfo);
-
+        RecordingWindow.Views.RecordingWindow recordingWindow = new(windowInfo, recOnOpen);
         _windowsByHandle[windowInfo.Handle] = recordingWindow;
         recordingWindow.Closed += (_, _) => _windowsByHandle.Remove(windowInfo.Handle);
-        recordingWindow.Activate();
+        return recordingWindow;
     }
 }
 

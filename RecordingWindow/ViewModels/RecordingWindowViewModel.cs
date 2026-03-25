@@ -35,7 +35,7 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
     private readonly WindowInfo _windowInfo;
     private MediaRenderer.MediaRenderer? _mediaRenderer = null;
 
-    public RecordingWindowViewModel(WindowInfo targetWindow, CanvasDevice device, DispatcherQueue dispatcher)
+    public RecordingWindowViewModel(WindowInfo targetWindow, bool recOnOpen, CanvasDevice device, DispatcherQueue dispatcher)
     {
         _dispatcherQueue = dispatcher;
         _windowInfo = targetWindow;
@@ -45,6 +45,13 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
         _capture.FrameArrived += OnFrameArrived;
         _capture.CaptureStopped += OnCaptureStopped;
         _swapChain = new CanvasSwapChain(_device, _captureItem.Size.Width, _captureItem.Size.Height, 96) ?? throw new InvalidOperationException("Failed to create swap chain.");
+        if (recOnOpen)
+        {
+            _dispatcherQueue.TryEnqueue(async () =>
+            {
+                await ClickCapture();
+            });
+        }
     }
 
     private void OnCaptureStopped()

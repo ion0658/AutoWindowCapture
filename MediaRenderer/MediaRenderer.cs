@@ -3,6 +3,7 @@ using ConfigManager.Models;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Windows.Devices.PointOfService;
@@ -19,15 +20,21 @@ public sealed partial class MediaRenderer : IDisposable
 {
 
     private MediaStreamSource? _mediaStreamSource = null;
-    private MediaStreamSourceSampleRequest? _pendingRequest = null;
-    private MediaStreamSourceSampleRequestDeferral? _pendingDeferral = null;
+    private MediaStreamSourceSampleRequest? _pendingVideoRequest = null;
+    private MediaStreamSourceSampleRequestDeferral? _pendingVideoDeferral = null;
+    private MediaStreamSourceSampleRequest? _pendingAudioRequest = null;
+    private MediaStreamSourceSampleRequestDeferral? _pendingAudioDeferral = null;
 
     private readonly LoopbackAudioCapture _audioCapture = new();
-    private readonly Channel<MediaStreamSample> _sampleChannel = Channel.CreateUnbounded<MediaStreamSample>();
+    private readonly Channel<MediaStreamSample> _videoSampleChannel = Channel.CreateUnbounded<MediaStreamSample>();
+    private readonly Channel<MediaStreamSample> _audioSampleChannel = Channel.CreateUnbounded<MediaStreamSample>();
     private readonly object _frameLock = new();
+    private readonly object _audioLock = new();
     private IRandomAccessStream? _outputStream = null;
     private readonly Task? _transcodeTask = null;
     private TimeSpan _firstFrameTime = TimeSpan.Zero;
+    private TimeSpan _audioTime = TimeSpan.Zero;
+    private AudioFormat _audioFormat;
 
     public MediaRenderer(GraphicsCaptureItem item, int proc_id, string process_name, AppConfig config)
     {
@@ -53,11 +60,18 @@ public sealed partial class MediaRenderer : IDisposable
         };
 
         _audioCapture.StartCapture(proc_id, OnPCMArrived);
-        var a_fmt = _audioCapture.CaptureFormat;
+        _audioFormat = _audioCapture.CaptureFormat;
+
         VideoEncodingProperties sourceVideoProps = VideoEncodingProperties.CreateUncompressed(MediaEncodingSubtypes.Bgra8, (uint)item.Size.Width, (uint)item.Size.Height);
         VideoStreamDescriptor videoDescriptor = new(sourceVideoProps);
 
-        _mediaStreamSource = new MediaStreamSource(videoDescriptor)
+        AudioEncodingProperties sourceAudioProps = AudioEncodingProperties.CreatePcm(
+            (uint)_audioFormat.SampleRate,
+            (uint)_audioFormat.Channels,
+            (uint)_audioFormat.BitsPerSample);
+        AudioStreamDescriptor audioDescriptor = new(sourceAudioProps);
+
+        _mediaStreamSource = new MediaStreamSource(videoDescriptor, audioDescriptor)
         {
             BufferTime = TimeSpan.Zero,
             IsLive = true,
@@ -70,6 +84,12 @@ public sealed partial class MediaRenderer : IDisposable
         MediaEncodingProfile encodingProfile = config.RecordingCodec == RecordingCodec.H264
             ? MediaEncodingProfile.CreateMp4(quality)
             : MediaEncodingProfile.CreateHevc(quality);
+
+        uint audioBitrate = Math.Clamp((uint)_audioFormat.Channels * 128_000u, 96_000u, 384_000u);
+        encodingProfile.Audio = AudioEncodingProperties.CreateAac(
+            (uint)_audioFormat.SampleRate,
+            (uint)_audioFormat.Channels,
+            audioBitrate);
 
         encodingProfile.Video!.Width = dst_size.Width;
         encodingProfile.Video!.Height = dst_size.Height;
@@ -107,15 +127,24 @@ public sealed partial class MediaRenderer : IDisposable
         Debug.WriteLine("Stopping MediaRenderer...");
         lock (_frameLock)
         {
-            if (_pendingRequest != null)
+            if (_pendingVideoRequest != null)
             {
-                _pendingRequest.Sample = null;
-                _pendingRequest = null;
-                _pendingDeferral?.Complete();
-                _pendingDeferral = null;
+                _pendingVideoRequest.Sample = null;
+                _pendingVideoRequest = null;
+                _pendingVideoDeferral?.Complete();
+                _pendingVideoDeferral = null;
+            }
+
+            if (_pendingAudioRequest != null)
+            {
+                _pendingAudioRequest.Sample = null;
+                _pendingAudioRequest = null;
+                _pendingAudioDeferral?.Complete();
+                _pendingAudioDeferral = null;
             }
         }
-        _ = _sampleChannel.Writer.TryComplete();
+        _ = _videoSampleChannel.Writer.TryComplete();
+        _ = _audioSampleChannel.Writer.TryComplete();
         if (_transcodeTask != null)
         {
             Debug.WriteLine("Waiting for transcoding to complete...");
@@ -137,21 +166,51 @@ public sealed partial class MediaRenderer : IDisposable
         MediaStreamSample sample = MediaStreamSample.CreateFromDirect3D11Surface(frame.Surface, frame_time);
         lock (_frameLock)
         {
-            if (_pendingRequest != null)
+            if (_pendingVideoRequest != null)
             {
-                _pendingRequest.Sample = sample;
-                _pendingRequest = null;
-                _pendingDeferral?.Complete();
-                _pendingDeferral = null;
+                _pendingVideoRequest.Sample = sample;
+                _pendingVideoRequest = null;
+                _pendingVideoDeferral?.Complete();
+                _pendingVideoDeferral = null;
                 return;
             }
         }
-        _ = _sampleChannel.Writer.TryWrite(sample);
+        _ = _videoSampleChannel.Writer.TryWrite(sample);
     }
 
     private void OnPCMArrived(byte[] pcmData, AudioFormat fmt)
     {
+        if (pcmData.Length == 0 || fmt.SampleRate <= 0 || fmt.Channels <= 0 || fmt.BitsPerSample <= 0)
+        {
+            return;
+        }
 
+        TimeSpan timestamp;
+        TimeSpan duration;
+        lock (_audioLock)
+        {
+            timestamp = _audioTime;
+            double bytesPerSecond = fmt.SampleRate * fmt.Channels * (fmt.BitsPerSample / 8.0);
+            duration = TimeSpan.FromSeconds(pcmData.Length / bytesPerSecond);
+            _audioTime += duration;
+        }
+
+        IBuffer buffer = pcmData.AsBuffer();
+        MediaStreamSample sample = MediaStreamSample.CreateFromBuffer(buffer, timestamp);
+        sample.Duration = duration;
+
+        lock (_frameLock)
+        {
+            if (_pendingAudioRequest != null)
+            {
+                _pendingAudioRequest.Sample = sample;
+                _pendingAudioRequest = null;
+                _pendingAudioDeferral?.Complete();
+                _pendingAudioDeferral = null;
+                return;
+            }
+        }
+        _ = _audioSampleChannel.Writer.TryWrite(sample);
     }
 
     private void OnMediaStreamSourceStarting(MediaStreamSource sender, MediaStreamSourceStartingEventArgs args)
@@ -162,11 +221,14 @@ public sealed partial class MediaRenderer : IDisposable
 
     private void OnSampleRequested(MediaStreamSource sender, MediaStreamSourceSampleRequestedEventArgs args)
     {
-        if (_sampleChannel.Reader.TryRead(out MediaStreamSample? sample))
+        bool isAudio = args.Request.StreamDescriptor is AudioStreamDescriptor;
+        ChannelReader<MediaStreamSample> channelReader = isAudio ? _audioSampleChannel.Reader : _videoSampleChannel.Reader;
+
+        if (channelReader.TryRead(out MediaStreamSample? sample))
         {
             args.Request.Sample = sample;
         }
-        else if (_sampleChannel.Reader.Completion.IsCompleted)
+        else if (channelReader.Completion.IsCompleted)
         {
             args.Request.Sample = null;
         }
@@ -174,8 +236,17 @@ public sealed partial class MediaRenderer : IDisposable
         {
             lock (_frameLock)
             {
-                _pendingDeferral = args.Request.GetDeferral();
-                _pendingRequest = args.Request;
+                MediaStreamSourceSampleRequestDeferral deferral = args.Request.GetDeferral();
+                if (isAudio)
+                {
+                    _pendingAudioDeferral = deferral;
+                    _pendingAudioRequest = args.Request;
+                }
+                else
+                {
+                    _pendingVideoDeferral = deferral;
+                    _pendingVideoRequest = args.Request;
+                }
             }
         }
     }

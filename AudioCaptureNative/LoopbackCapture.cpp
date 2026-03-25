@@ -47,7 +47,7 @@ HRESULT CLoopbackCapture::ActivateAudioInterface(DWORD processId) {
         audioclientActivationParams.ActivationType =
             AUDIOCLIENT_ACTIVATION_TYPE_PROCESS_LOOPBACK;
         audioclientActivationParams.ProcessLoopbackParams.ProcessLoopbackMode =
-            PROCESS_LOOPBACK_MODE_EXCLUDE_TARGET_PROCESS_TREE;
+            PROCESS_LOOPBACK_MODE_INCLUDE_TARGET_PROCESS_TREE;
         audioclientActivationParams.ProcessLoopbackParams.TargetProcessId =
             processId;
 

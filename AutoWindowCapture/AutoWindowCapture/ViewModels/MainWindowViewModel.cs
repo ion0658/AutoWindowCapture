@@ -12,7 +12,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
     private readonly IRecordingWindowLauncher _recordingWindowLauncher;
 
     [ObservableProperty]
-    private NavigationViewItem? _selectedItem;
+    public partial NavigationViewItem? SelectedItem { get; set; } = null;
 
     public MainWindowViewModel(INavigationService nav, IRecordingWindowLauncher recordingWindowLauncher)
     {

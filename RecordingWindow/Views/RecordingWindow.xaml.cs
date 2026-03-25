@@ -1,6 +1,7 @@
 using Microsoft.Graphics.Canvas;
 using Microsoft.UI.Xaml;
 using RecordingWindow.ViewModels;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using WindowEnumerator;
 
@@ -15,7 +16,7 @@ public sealed partial class RecordingWindow : Window
     {
         InitializeComponent();
 
-        Title = $"Recording - {targetWindow.ProcessName}";
+        Title = $"Preview - {targetWindow.ProcessName}";
         vm = new RecordingWindowViewModel(targetWindow, recOnOpen, CanvasDevice.GetSharedDevice(), DispatcherQueue);
         Canvas.SizeChanged += (s, e) => { vm.SwapChain?.ResizeBuffers(e.NewSize); };
         vm.CloseRequested += () => DispatcherQueue.TryEnqueue(() => Close());

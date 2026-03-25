@@ -15,13 +15,13 @@ public sealed partial class ConfigPageViewModel : ObservableObject
     private readonly ConfigManagerService _configManager = new();
 
     [ObservableProperty]
-    private string _recordingSaveDirectory = string.Empty;
+    public partial string RecordingSaveDirectory { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private RecordingCodec _selectedRecordingCodec = RecordingCodec.H264;
+    public partial RecordingCodec SelectedRecordingCodec { get; set; } = RecordingCodec.H264;
 
     [ObservableProperty]
-    private RecordingResolutionPreset _selectedRecordingResolution = RecordingResolutionPreset.Source;
+    public partial RecordingResolutionPreset SelectedRecordingResolution { get; set; } = RecordingResolutionPreset.FHD_1920x1080;
 
     public string? SelectedExecutableName
     {

@@ -64,7 +64,7 @@ public sealed class ConfigManagerService
             RecordingSaveDirectory = DefaultRecordingSaveDirectory,
             AutoRecordingExecutableNames = [],
             RecordingCodec = RecordingCodec.H264,
-            RecordingResolution = RecordingFormatOptions.ToSize(RecordingResolutionPreset.Source)
+            RecordingResolution = RecordingFormatOptions.ToSize(RecordingResolutionPreset.FHD_1920x1080)
         };
     }
 
@@ -87,7 +87,7 @@ public sealed class ConfigManagerService
 
         RecordingResolutionSize normalizedResolution = RecordingFormatOptions.IsSupported(config.RecordingResolution)
             ? config.RecordingResolution
-            : RecordingFormatOptions.ToSize(RecordingResolutionPreset.Source);
+            : RecordingFormatOptions.ToSize(RecordingResolutionPreset.FHD_1920x1080);
 
         return new AppConfig
         {

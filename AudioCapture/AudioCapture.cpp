@@ -128,4 +128,3 @@ AudioFormat LoopbackAudioCapture::CaptureFormat::get() {
 }
 
 }  // namespace AudioCapture
-

@@ -295,4 +295,3 @@ HRESULT CLoopbackCapture::OnAudioSampleRequested() {
 
     return S_OK;
 }
-

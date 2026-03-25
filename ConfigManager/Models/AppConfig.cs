@@ -10,6 +10,6 @@ public sealed class AppConfig
 
     public RecordingCodec RecordingCodec { get; set; } = RecordingCodec.H264;
 
-    public RecordingResolutionSize RecordingResolution { get; set; } = RecordingFormatOptions.ToSize(RecordingResolutionPreset.Source);
+    public RecordingResolutionSize RecordingResolution { get; set; } = RecordingFormatOptions.ToSize(RecordingResolutionPreset.FHD_1920x1080);
 }
 

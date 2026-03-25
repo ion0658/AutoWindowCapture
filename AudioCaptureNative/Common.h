@@ -42,4 +42,3 @@
                                                                              \
     } m_x##AsyncCallback;
 #endif
-

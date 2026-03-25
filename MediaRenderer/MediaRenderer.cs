@@ -34,6 +34,8 @@ public sealed partial class MediaRenderer : IDisposable
     private readonly Task? _transcodeTask = null;
     private TimeSpan _firstFrameTime = TimeSpan.Zero;
     private TimeSpan _audioTime = TimeSpan.Zero;
+    VideoStreamDescriptor? _videoStreamDescriptor;
+    AudioStreamDescriptor? _audioStreamDescriptor;
     private AudioFormat _audioFormat;
 
     public MediaRenderer(GraphicsCaptureItem item, int proc_id, string process_name, AppConfig config)
@@ -41,7 +43,7 @@ public sealed partial class MediaRenderer : IDisposable
         _transcodeTask = Start(item, proc_id, process_name, config);
     }
 
-    private VideoEncodingQuality GetVideoEncodingQuality(SizeUInt32 size)
+    private static VideoEncodingQuality GetVideoEncodingQuality(SizeUInt32 size)
     {
         return size.Height switch
         {
@@ -50,28 +52,29 @@ public sealed partial class MediaRenderer : IDisposable
             _ => VideoEncodingQuality.Auto,
         };
     }
+    private static uint ToEvenValue(uint value)
+    {
+        return (value / 2) * 2;
+    }
 
     private async Task Start(GraphicsCaptureItem item, int proc_id, string process_name, AppConfig config)
     {
-        SizeUInt32 dst_size = config.RecordingResolution switch
-        {
-            { Width: 0, Height: 0 } => new SizeUInt32((uint)item.Size.Width, (uint)item.Size.Height),
-            { Width: var w, Height: var h } => new SizeUInt32((uint)w, (uint)h)
-        };
+        SizeUInt32 dst_size = new SizeUInt32((uint)config.RecordingResolution.Width, (uint)config.RecordingResolution.Height);
+        Debug.WriteLine($"Starting MediaRenderer for process '{process_name}' (PID: {proc_id}) with resolution {dst_size.Width}x{dst_size.Height} and codec {config.RecordingCodec}");
 
         _audioCapture.StartCapture(proc_id, OnPCMArrived);
         _audioFormat = _audioCapture.CaptureFormat;
 
         VideoEncodingProperties sourceVideoProps = VideoEncodingProperties.CreateUncompressed(MediaEncodingSubtypes.Bgra8, (uint)item.Size.Width, (uint)item.Size.Height);
-        VideoStreamDescriptor videoDescriptor = new(sourceVideoProps);
+        _videoStreamDescriptor = new(sourceVideoProps);
 
         AudioEncodingProperties sourceAudioProps = AudioEncodingProperties.CreatePcm(
             (uint)_audioFormat.SampleRate,
             (uint)_audioFormat.Channels,
             (uint)_audioFormat.BitsPerSample);
-        AudioStreamDescriptor audioDescriptor = new(sourceAudioProps);
+         _audioStreamDescriptor = new(sourceAudioProps);
 
-        _mediaStreamSource = new MediaStreamSource(videoDescriptor, audioDescriptor)
+        _mediaStreamSource = new MediaStreamSource(_videoStreamDescriptor, _audioStreamDescriptor)
         {
             BufferTime = TimeSpan.Zero,
             IsLive = true,
@@ -85,14 +88,14 @@ public sealed partial class MediaRenderer : IDisposable
             ? MediaEncodingProfile.CreateMp4(quality)
             : MediaEncodingProfile.CreateHevc(quality);
 
-        uint audioBitrate = Math.Clamp((uint)_audioFormat.Channels * 128_000u, 96_000u, 384_000u);
+        uint audioBitrate = Math.Clamp((uint)_audioFormat.Channels * 192_000u, 96_000u, 384_000u);
         encodingProfile.Audio = AudioEncodingProperties.CreateAac(
             (uint)_audioFormat.SampleRate,
             (uint)_audioFormat.Channels,
             audioBitrate);
 
-        encodingProfile.Video!.Width = dst_size.Width;
-        encodingProfile.Video!.Height = dst_size.Height;
+        encodingProfile.Video!.Width = ToEvenValue(dst_size.Width);
+        encodingProfile.Video!.Height = ToEvenValue(dst_size.Height);
         encodingProfile.Video!.FrameRate.Numerator = 60;
         encodingProfile.Video!.FrameRate.Denominator = 1;
 
@@ -162,6 +165,10 @@ public sealed partial class MediaRenderer : IDisposable
         {
             _firstFrameTime = frame.SystemRelativeTime;
         }
+
+        _videoStreamDescriptor?.EncodingProperties.Width = (uint)frame.ContentSize.Width;
+        _videoStreamDescriptor?.EncodingProperties.Height = (uint)frame.ContentSize.Height;
+
         TimeSpan frame_time = frame.SystemRelativeTime - _firstFrameTime;
         MediaStreamSample sample = MediaStreamSample.CreateFromDirect3D11Surface(frame.Surface, frame_time);
         lock (_frameLock)
@@ -223,7 +230,6 @@ public sealed partial class MediaRenderer : IDisposable
     {
         bool isAudio = args.Request.StreamDescriptor is AudioStreamDescriptor;
         ChannelReader<MediaStreamSample> channelReader = isAudio ? _audioSampleChannel.Reader : _videoSampleChannel.Reader;
-
         if (channelReader.TryRead(out MediaStreamSample? sample))
         {
             args.Request.Sample = sample;

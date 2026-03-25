@@ -22,11 +22,10 @@ public sealed partial class WindowListViewModel : ObservableObject, IDisposable
     private readonly DispatcherQueue _dispatcher;
 
     [ObservableProperty]
-    private ObservableCollection<WindowInfo> _windows = [];
+    public partial ObservableCollection<WindowInfo> Windows { get; set; } = [];
 
     [ObservableProperty]
-    private WindowInfo? _selectedWindow = null;
-
+    public partial WindowInfo? SelectedWindow { get; set; } = null;
 
     public WindowListViewModel(DispatcherQueue dispatcher)
     {
@@ -65,7 +64,7 @@ public sealed partial class WindowListViewModel : ObservableObject, IDisposable
         }
 
         _recordingWindowLauncher?.OpenOrActivate(value, false);
-        _selectedWindow = null;
+        SelectedWindow = null;
     }
 
     public void SetWindows(IEnumerable<WindowInfo> windows)

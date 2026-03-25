@@ -4,7 +4,7 @@ using System;
 
 namespace ConfigPage;
 
-public class BoolToEnumConverter : IValueConverter
+public partial class BoolToEnumConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, string culture)
     {

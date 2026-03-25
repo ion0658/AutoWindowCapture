@@ -19,11 +19,11 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
     private readonly DispatcherQueue _dispatcherQueue;
 
     [ObservableProperty]
-    private CanvasSwapChain? _swapChain = null;
+    public partial CanvasSwapChain? SwapChain { get; set; } = null;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(RecordButtonText))]
-    private bool _isRecording = false;
+    public partial bool IsRecording { get; set; } = false;
 
     public string RecordButtonText => IsRecording ? "StopRecording" : "Start Recording";
 
@@ -35,7 +35,7 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
     private readonly WindowInfo _windowInfo;
     private MediaRenderer.MediaRenderer? _mediaRenderer = null;
 
-    public RecordingWindowViewModel(WindowInfo targetWindow, bool recOnOpen, CanvasDevice device, DispatcherQueue dispatcher)
+    public RecordingWindowViewModel(WindowInfo targetWindow, bool recOnStart, CanvasDevice device, DispatcherQueue dispatcher)
     {
         _dispatcherQueue = dispatcher;
         _windowInfo = targetWindow;
@@ -44,11 +44,12 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
         _capture = new WindowCapture.WindowCapture(_device, _captureItem);
         _capture.FrameArrived += OnFrameArrived;
         _capture.CaptureStopped += OnCaptureStopped;
-        _swapChain = new CanvasSwapChain(_device, _captureItem.Size.Width, _captureItem.Size.Height, 96) ?? throw new InvalidOperationException("Failed to create swap chain.");
-        if (recOnOpen)
+        SwapChain = new CanvasSwapChain(_device, _captureItem.Size.Width, _captureItem.Size.Height, 96) ?? throw new InvalidOperationException("Failed to create swap chain.");
+        if (recOnStart)
         {
             _dispatcherQueue.TryEnqueue(async () =>
             {
+                await Task.Delay(5_000); // Wait for the window to be ready, otherwise the recording will be black.
                 await ClickCapture();
             });
         }
@@ -56,17 +57,20 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
 
     private void OnCaptureStopped()
     {
+
         if (SwapChain is not null)
         {
             using (CanvasDrawingSession ds = SwapChain.CreateDrawingSession(Microsoft.UI.Colors.Transparent)) { }
             SwapChain.Present();
         }
-
-        if (IsRecording && _mediaRenderer is not null)
+        _dispatcherQueue.TryEnqueue(async () =>
         {
-            _ = ClickCapture();
-        }
-        CloseRequested?.Invoke();
+            if (IsRecording && _mediaRenderer is not null)
+            {
+                await _mediaRenderer.StopAsync();
+            }
+            CloseRequested?.Invoke();
+        });
     }
 
     private void OnFrameArrived(Direct3D11CaptureFrame frame)
@@ -90,7 +94,7 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
             double draw_x = (target_size.Width - draw_width) / 2;
             double draw_y = (target_size.Height - draw_height) / 2;
 
-            ds.DrawImage(bitmap, new Rect(draw_x, draw_y, draw_width, draw_height), bitmap.Bounds, 1.0f, CanvasImageInterpolation.Cubic);
+            ds.DrawImage(bitmap, new Rect(draw_x, draw_y, draw_width, draw_height), bitmap.Bounds, 1.0f, CanvasImageInterpolation.NearestNeighbor);
         }
 
         SwapChain.Present();
@@ -102,22 +106,23 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
     }
 
     [RelayCommand]
-    private async Task ClickCapture()
+    public async Task ClickCapture()
     {
-        if (IsRecording && _mediaRenderer is not null)
+        _ = _dispatcherQueue.TryEnqueue(async () =>
         {
-            Debug.WriteLine("Stop recording...");
-            await _mediaRenderer.StopAsync();
-            _mediaRenderer?.Dispose();
-            _mediaRenderer = null;
-        }
-        else if (!IsRecording)
-        {
-            Debug.WriteLine("Start recording...");
-            _mediaRenderer = new MediaRenderer.MediaRenderer(_captureItem, (int)_windowInfo.ProcessId, _windowInfo.ProcessName, _configManager.Load());
-        }
-        _ = _dispatcherQueue.TryEnqueue(() =>
-        {
+            if (IsRecording && _mediaRenderer is not null)
+            {
+                Debug.WriteLine("Stop recording...");
+                await _mediaRenderer.StopAsync();
+                _mediaRenderer?.Dispose();
+                _mediaRenderer = null;
+            }
+            else if (!IsRecording)
+            {
+                Debug.WriteLine("Start recording...");
+                _mediaRenderer = new MediaRenderer.MediaRenderer(_captureItem, (int)_windowInfo.ProcessId, _windowInfo.ProcessName, _configManager.Load());
+            }
+
             IsRecording = !IsRecording;
         });
     }

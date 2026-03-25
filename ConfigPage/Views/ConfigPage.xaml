@@ -37,9 +37,6 @@
             <TextBlock Text="解像度" />
             <StackPanel Orientation="Horizontal"
                         Spacing="12">
-                <RadioButton Content="Source"
-                             GroupName="RecordingResolution"
-                             IsChecked="{x:Bind vm.SelectedRecordingResolution, Converter={StaticResource Enum}, ConverterParameter=Source, Mode=TwoWay}" />
                 <RadioButton Content="1280 x 720"
                              GroupName="RecordingResolution"
                              IsChecked="{x:Bind vm.SelectedRecordingResolution, Converter={StaticResource Enum}, ConverterParameter=HD_1280x720, Mode=TwoWay}" />

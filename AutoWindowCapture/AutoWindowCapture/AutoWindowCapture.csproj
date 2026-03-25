@@ -3,7 +3,7 @@
 		<OutputType>WinExe</OutputType>
 		<RootNamespace>AutoWindowCapture</RootNamespace>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<Platforms>x86;x64;ARM64;AnyCPU</Platforms>
+		<Platforms>x86;x64;ARM64</Platforms>
 		<RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
 		<UseWinUI>true</UseWinUI>
 		<WinUISDKReferences>false</WinUISDKReferences>
@@ -50,10 +50,6 @@
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 		<WarningLevel>8</WarningLevel>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-		<WarningLevel>8</WarningLevel>
-	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 		<WarningLevel>8</WarningLevel>
@@ -63,10 +59,6 @@
 		<WarningLevel>8</WarningLevel>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-		<WarningLevel>8</WarningLevel>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 		<WarningLevel>8</WarningLevel>
 	</PropertyGroup>

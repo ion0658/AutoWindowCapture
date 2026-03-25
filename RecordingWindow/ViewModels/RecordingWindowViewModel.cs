@@ -35,8 +35,6 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
     private readonly WindowInfo _windowInfo;
     private MediaRenderer.MediaRenderer? _mediaRenderer = null;
 
-
-
     public RecordingWindowViewModel(WindowInfo targetWindow, CanvasDevice device, DispatcherQueue dispatcher)
     {
         _dispatcherQueue = dispatcher;
@@ -94,6 +92,11 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
         {
             _mediaRenderer?.PutFrame(frame);
         }
+    }
+
+    private void OnAudioDataArrived(ReadOnlyMemory<byte> audio_data, int samplingRate, int channels, int bitsPerSample)
+    {
+        Debug.WriteLine($"Audio data arrived: {audio_data.Length} bytes");
     }
 
     [RelayCommand]

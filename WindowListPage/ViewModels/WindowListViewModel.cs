@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using WindowEnumerator;
+using WindowEnumeratorNative;
 using WindowListPage.Services;
 
 namespace WindowListPage.ViewModels;
@@ -30,8 +30,8 @@ public sealed partial class WindowListViewModel : ObservableObject, IDisposable
     public WindowListViewModel(DispatcherQueue dispatcher)
     {
         _dispatcher = dispatcher;
-        _observer.WindowAdded += (sender, window) => OnWindowAdded(window);
-        _observer.WindowRemoved += (sender, window) => OnWindowRemoved(window);
+        _observer.WindowAdded += (window) => OnWindowAdded(window);
+        _observer.WindowRemoved += (window) => OnWindowRemoved(window);
 
         Windows.CollectionChanged += (sender, args) =>
         {
@@ -48,7 +48,7 @@ public sealed partial class WindowListViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
-        _observer.Dispose();
+        _observer.Stop();
     }
 
     public void SetRecordingWindowLauncher(IRecordingWindowLauncher launcher)

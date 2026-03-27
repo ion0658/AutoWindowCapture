@@ -3,7 +3,7 @@ using Microsoft.UI.Xaml;
 using RecordingWindow.ViewModels;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using WindowEnumerator;
+using WindowEnumeratorNative;
 
 namespace RecordingWindow.Views;
 

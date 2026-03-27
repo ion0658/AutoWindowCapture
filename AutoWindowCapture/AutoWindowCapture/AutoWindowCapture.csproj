@@ -21,9 +21,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\Binding\Binding.csproj" />
 		<ProjectReference Include="..\..\ConfigPage\ConfigPage.csproj" />
 		<ProjectReference Include="..\..\RecordingWindow\RecordingWindow.csproj" />
-		<ProjectReference Include="..\..\WindowEnumerator\WindowEnumerator.csproj" />
 		<ProjectReference Include="..\..\WindowListPage\WindowListPage.csproj" />
 	</ItemGroup>
 

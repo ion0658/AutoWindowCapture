@@ -8,8 +8,9 @@ namespace WindowCapture;
 
 public static class CaptureHelper
 {
-    public static GraphicsCaptureItem CreateItemForWindow(Windows.Win32.Foundation.HWND hwnd)
+    public static GraphicsCaptureItem CreateItemForWindow(long handle)
     {
+        Windows.Win32.Foundation.HWND hwnd = new((IntPtr)handle);
         if (hwnd == IntPtr.Zero)
         {
             throw new ArgumentException("Invalid window handle.", nameof(hwnd));

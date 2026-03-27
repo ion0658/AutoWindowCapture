@@ -1,4 +1,4 @@
-namespace WindowEnumerator {
+namespace WindowEnumeratorNative {
 runtimeclass WindowInfo {
     WindowInfo(Int64 handle, String title, UInt32 processId,
                String processName);

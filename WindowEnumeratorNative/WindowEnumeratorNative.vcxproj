@@ -119,16 +119,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="WindowEnumerator.WindowInfo.h" />
-    <ClInclude Include="WindowEnumerator.WindowMonitor.h" />
+    <ClInclude Include="WindowInfo.h" />
+    <ClInclude Include="WindowMonitor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
-    <ClCompile Include="WindowEnumerator.WindowInfo.cpp" />
-    <ClCompile Include="WindowEnumerator.WindowMonitor.cpp" />
+    <ClCompile Include="WindowInfo.cpp" />
+    <ClCompile Include="WindowMonitor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="WindowEnumerator.idl" />

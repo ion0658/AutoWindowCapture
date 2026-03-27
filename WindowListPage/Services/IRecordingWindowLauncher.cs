@@ -1,5 +1,4 @@
-using System.Threading.Tasks;
-using WindowEnumerator;
+using WindowEnumeratorNative;
 
 namespace WindowListPage.Services;
 

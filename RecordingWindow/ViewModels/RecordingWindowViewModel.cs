@@ -7,7 +7,7 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using WindowCapture;
-using WindowEnumerator;
+using WindowEnumeratorNative;
 using Windows.Foundation;
 using Windows.Graphics.Capture;
 

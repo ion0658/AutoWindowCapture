@@ -17,9 +17,9 @@
     <CppWinRTOptimized>true</CppWinRTOptimized>
     <CppWinRTRootNamespaceAutoMerge>true</CppWinRTRootNamespaceAutoMerge>
     <MinimalCoreWin>true</MinimalCoreWin>
-    <ProjectGuid>{3d05e972-1117-46b2-9e8c-183b38dc6ff6}</ProjectGuid>
-    <ProjectName>WindowAudioCaptureNative</ProjectName>
-    <RootNamespace>WindowAudioCaptureNative</RootNamespace>
+    <ProjectGuid>{2b48c97b-b93d-4b33-8d68-01d34d638a63}</ProjectGuid>
+    <ProjectName>WIndowAudioCaptureNative</ProjectName>
+    <RootNamespace>WIndowAudioCaptureNative</RootNamespace>
     <DefaultLanguage>ja-JP</DefaultLanguage>
     <MinimumVisualStudioVersion>16.0</MinimumVisualStudioVersion>
     <AppContainerApplication>false</AppContainerApplication>
@@ -100,7 +100,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
-      <ModuleDefinitionFile>WindowAudioCaptureNative.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>WIndowAudioCaptureNative.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -128,12 +128,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="WindowAudioCaptureNative.def" />
+    <None Include="WIndowAudioCaptureNative.def" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme.txt">
       <DeploymentContent>false</DeploymentContent>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="WindowAudioCapture.idl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

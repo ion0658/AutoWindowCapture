@@ -6,7 +6,6 @@
         <InformationalVersion>0.1.0</InformationalVersion>
 
         <LangVersion>preview</LangVersion>
-        <PublishAot>false</PublishAot>
         <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
         <SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
         <TargetPlatformMinVersion>10.0.26100.0</TargetPlatformMinVersion>
@@ -20,8 +19,10 @@
         <WindowsPackageType>None</WindowsPackageType>
         <BuiltInComSupport>true</BuiltInComSupport>
 
+        <PublishAot>false</PublishAot>
         <IsAotCompatible>false</IsAotCompatible>
         <OptimizationPreference>speed</OptimizationPreference>
+        <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
     </PropertyGroup>
 </Project>
 

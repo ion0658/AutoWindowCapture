@@ -10,16 +10,16 @@
 	</PropertyGroup>
 
 	<PropertyGroup Label="CsWinRTIncludes">
-		<CsWinRTIncludes>WindowEnumeratorNative;WindowGraphicCaptureNative</CsWinRTIncludes>
+		<CsWinRTIncludes>WindowEnumeratorNative;WindowGraphicCaptureNative;WindowAudioCaptureNative</CsWinRTIncludes>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7705" />
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\WIndowAudioCaptureNative\WIndowAudioCaptureNative.vcxproj" />
 		<ProjectReference Include="..\WindowEnumeratorNative\WindowEnumeratorNative.vcxproj" />
 		<ProjectReference Include="..\WindowGraphicCaptureNative\WindowGraphicCaptureNative.vcxproj" />
 	</ItemGroup>
 
 </Project>
-

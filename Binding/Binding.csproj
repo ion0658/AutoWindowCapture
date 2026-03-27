@@ -17,7 +17,6 @@
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7705" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\WIndowAudioCaptureNative\WIndowAudioCaptureNative.vcxproj" />
 		<ProjectReference Include="..\WindowEnumeratorNative\WindowEnumeratorNative.vcxproj" />
 		<ProjectReference Include="..\WindowGraphicCaptureNative\WindowGraphicCaptureNative.vcxproj" />
 	</ItemGroup>

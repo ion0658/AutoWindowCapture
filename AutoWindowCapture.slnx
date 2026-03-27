@@ -39,7 +39,6 @@
     <Platform Solution="*|x64" Project="x64" />
     <Platform Solution="Debug|x86" Project="x86" />
   </Project>
-  <Project Path="WindowAudioCaptureNative/WindowAudioCaptureNative.vcxproj" Id="2b48c97b-b93d-4b33-8d68-01d34d638a63" DisplayName="WIndowAudioCaptureNative" />
   <Project Path="WindowEnumeratorNative/WindowEnumeratorNative.vcxproj" Id="f05e8011-a178-4f69-a065-7bc0c998c4c0" />
   <Project Path="WindowGraphicCaptureNative/WindowGraphicCaptureNative.vcxproj" Id="9c52a2a1-cdc6-48d8-9e08-b339b52b422b" />
   <Project Path="WindowListPage/WindowListPage.csproj" Id="61ebfb6b-e19d-4b8d-a221-733231ec4d46">

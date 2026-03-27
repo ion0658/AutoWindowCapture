@@ -4,18 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace ConfigManager;
 
 public sealed class ConfigManagerService
 {
     private const string ConfigFileName = "config.json";
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        WriteIndented = true,
-        Converters = { new JsonStringEnumConverter() }
-    };
 
     public static string AppName => Assembly.GetEntryAssembly()?.GetName().Name ?? "AutoWindowCapture";
 
@@ -37,7 +31,7 @@ public sealed class ConfigManagerService
         try
         {
             string json = File.ReadAllText(ConfigFilePath);
-            AppConfig? config = JsonSerializer.Deserialize<AppConfig>(json, JsonOptions);
+            AppConfig? config = JsonSerializer.Deserialize<AppConfig>(json, AppConfigJsonContext.Default.AppConfig);
             return Normalize(config ?? CreateDefault());
         }
         catch
@@ -53,7 +47,7 @@ public sealed class ConfigManagerService
         _ = Directory.CreateDirectory(AppDirectoryPath);
         _ = Directory.CreateDirectory(normalized.RecordingSaveDirectory);
 
-        string json = JsonSerializer.Serialize(normalized, JsonOptions);
+        string json = JsonSerializer.Serialize(normalized, AppConfigJsonContext.Default.AppConfig);
         File.WriteAllText(ConfigFilePath, json);
     }
 

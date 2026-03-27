@@ -20,7 +20,8 @@
 		<ProjectReference Include="..\Binding\Binding.csproj" />
 		<ProjectReference Include="..\ConfigManager\ConfigManager.csproj" />
 		<ProjectReference Include="..\MediaRenderer\MediaRenderer.csproj" />
-		<ProjectReference Include="..\WindowCapture\WindowCapture.csproj" />
+		<ProjectReference Include="..\WindowEnumeratorNative\WindowEnumeratorNative.vcxproj" />
+		<ProjectReference Include="..\WindowGraphicCaptureNative\WindowGraphicCaptureNative.vcxproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<Page Update="Views\RecordingWindow.xaml">

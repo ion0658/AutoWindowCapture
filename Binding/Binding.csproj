@@ -1,28 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <RootNamespace>Binding</RootNamespace>
-    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-    <UseWinUI>true</UseWinUI>
-    <WinUISDKReferences>false</WinUISDKReferences>
-    <Platforms>x64;ARM64;x86</Platforms>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <FindInvalidProjectReferences>false</FindInvalidProjectReferences>
-  </PropertyGroup>
-    
-	<PropertyGroup Label="CsWinRTIncludes">
-		<CsWinRTIncludes>WindowEnumeratorNative</CsWinRTIncludes>
+	<PropertyGroup>
+		<RootNamespace>Binding</RootNamespace>
+		<RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+		<UseWinUI>true</UseWinUI>
+		<WinUISDKReferences>false</WinUISDKReferences>
+		<Platforms>x64;ARM64;x86</Platforms>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<FindInvalidProjectReferences>false</FindInvalidProjectReferences>
 	</PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.269">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7705" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\WindowEnumeratorNative\WindowEnumeratorNative.vcxproj" />
-  </ItemGroup>
+
+	<PropertyGroup Label="CsWinRTIncludes">
+		<CsWinRTIncludes>WindowEnumeratorNative;WindowGraphicCaptureNative</CsWinRTIncludes>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7705" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\WindowEnumeratorNative\WindowEnumeratorNative.vcxproj" />
+		<ProjectReference Include="..\WindowGraphicCaptureNative\WindowGraphicCaptureNative.vcxproj" />
+	</ItemGroup>
 
 </Project>
 

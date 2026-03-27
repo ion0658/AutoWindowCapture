@@ -22,11 +22,10 @@ std::wstring Trim(std::wstring value) {
     return std::wstring(begin, end);
 }
 
-int CompareCaseInsensitive(std::wstring const& left, std::wstring const& right) {
-    return ::CompareStringOrdinal(left.c_str(),
-                                  static_cast<int>(left.size()),
-                                  right.c_str(),
-                                  static_cast<int>(right.size()),
+int CompareCaseInsensitive(std::wstring const& left,
+                           std::wstring const& right) {
+    return ::CompareStringOrdinal(left.c_str(), static_cast<int>(left.size()),
+                                  right.c_str(), static_cast<int>(right.size()),
                                   TRUE) -
            CSTR_EQUAL;
 }
@@ -37,9 +36,8 @@ std::mutex WindowMonitor::s_hookMapMutex;
 std::unordered_map<HWINEVENTHOOK, WindowMonitor*> WindowMonitor::s_hookMap;
 
 WindowMonitor::WindowMonitor() {
-    for (DWORD eventId : {EVENT_OBJECT_SHOW,
-                          EVENT_OBJECT_HIDE,
-                          EVENT_OBJECT_NAMECHANGE}) {
+    for (DWORD eventId :
+         {EVENT_OBJECT_SHOW, EVENT_OBJECT_HIDE, EVENT_OBJECT_NAMECHANGE}) {
         m_hooks.push_back(RegisterHook(eventId));
     }
 }
@@ -69,13 +67,13 @@ WindowMonitor::EnumerateWindows() {
         },
         reinterpret_cast<LPARAM>(&context));
 
-    std::sort(windows.begin(),
-              windows.end(),
+    std::sort(windows.begin(), windows.end(),
               [](auto const& left, auto const& right) {
                   std::wstring leftProcessName{left.ProcessName().c_str()};
                   std::wstring rightProcessName{right.ProcessName().c_str()};
 
-                  int byName = CompareCaseInsensitive(leftProcessName, rightProcessName);
+                  int byName =
+                      CompareCaseInsensitive(leftProcessName, rightProcessName);
                   if (byName != 0) {
                       return byName < 0;
                   }
@@ -90,8 +88,8 @@ WindowMonitor::EnumerateWindows() {
                   return CompareCaseInsensitive(leftTitle, rightTitle) < 0;
               });
 
-    auto result =
-        winrt::single_threaded_vector<winrt::WindowEnumeratorNative::WindowInfo>();
+    auto result = winrt::single_threaded_vector<
+        winrt::WindowEnumeratorNative::WindowInfo>();
     for (auto const& window : windows) {
         result.Append(window);
     }
@@ -180,19 +178,16 @@ void WindowMonitor::OnWinEvent(DWORD eventType,
         if (windowInfo.has_value()) {
             m_windowAdded(windowInfo.value());
         }
-    } else if (eventType == EVENT_OBJECT_DESTROY || eventType == EVENT_OBJECT_HIDE) {
+    } else if (eventType == EVENT_OBJECT_DESTROY ||
+               eventType == EVENT_OBJECT_HIDE) {
         m_windowRemoved(winrt::WindowEnumeratorNative::WindowInfo(
             reinterpret_cast<intptr_t>(hwnd), L"", 0, L""));
     }
 }
 
 HWINEVENTHOOK WindowMonitor::RegisterHook(DWORD eventId) {
-    auto hook = ::SetWinEventHook(eventId,
-                                  eventId,
-                                  nullptr,
-                                  &WindowMonitor::OnWinEventStatic,
-                                  0,
-                                  0,
+    auto hook = ::SetWinEventHook(eventId, eventId, nullptr,
+                                  &WindowMonitor::OnWinEventStatic, 0, 0,
                                   WINEVENT_OUTOFCONTEXT);
 
     if (hook != nullptr) {
@@ -256,9 +251,7 @@ WindowMonitor::TryCreateWindowInfo(HWND hwnd) const {
     std::wstring processName = GetProcessName(processId);
 
     return winrt::WindowEnumeratorNative::WindowInfo(
-        reinterpret_cast<intptr_t>(hwnd),
-        winrt::hstring(title),
-        processId,
+        reinterpret_cast<intptr_t>(hwnd), winrt::hstring(title), processId,
         winrt::hstring(processName));
 }
 
@@ -271,8 +264,8 @@ std::wstring WindowMonitor::GetProcessName(DWORD processId) {
 
     wchar_t imagePath[MAX_PATH]{};
     DWORD size = ARRAYSIZE(imagePath);
-    const bool succeeded =
-        ::QueryFullProcessImageNameW(processHandle, 0, imagePath, &size) != FALSE;
+    const bool succeeded = ::QueryFullProcessImageNameW(
+                               processHandle, 0, imagePath, &size) != FALSE;
 
     ::CloseHandle(processHandle);
 
@@ -282,8 +275,9 @@ std::wstring WindowMonitor::GetProcessName(DWORD processId) {
 
     std::wstring fullPath(imagePath, size);
     auto separator = fullPath.find_last_of(L"\\/");
-    std::wstring fileName =
-        separator == std::wstring::npos ? fullPath : fullPath.substr(separator + 1);
+    std::wstring fileName = separator == std::wstring::npos
+                                ? fullPath
+                                : fullPath.substr(separator + 1);
 
     constexpr std::wstring_view exeSuffix = L".exe";
     if (fileName.size() >= exeSuffix.size() &&

@@ -3,8 +3,10 @@ namespace WindowGraphicCaptureNative {
 delegate void FrameArrivedHandler(Windows.Graphics.Capture.Direct3D11CaptureFrame frame);
 delegate void CaptureStoppedHandler();
 
-runtimeclass WindowCapture {
-    WindowCapture();
+runtimeclass WindowCapture: Windows.Foundation.IClosable {
+    WindowCapture(Windows.Graphics.DirectX.Direct3D11.IDirect3DDevice device,
+                  Windows.Graphics.Capture.GraphicsCaptureItem item);
+    static Windows.Graphics.Capture.GraphicsCaptureItem CreateItemForWindow(Int64 handle);
     event FrameArrivedHandler FrameArrived;
     event CaptureStoppedHandler CaptureStopped;
 }

@@ -6,8 +6,8 @@ using Microsoft.UI.Dispatching;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using WindowCapture;
 using WindowEnumeratorNative;
+using WindowGraphicCaptureNative;
 using Windows.Foundation;
 using Windows.Graphics.Capture;
 
@@ -31,17 +31,18 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
 
     private readonly CanvasDevice _device;
     private readonly GraphicsCaptureItem _captureItem;
-    private readonly WindowCapture.WindowCapture _capture;
+    private readonly WindowCapture _capture;
     private readonly WindowInfo _windowInfo;
     private MediaRenderer.MediaRenderer? _mediaRenderer = null;
 
     public RecordingWindowViewModel(WindowInfo targetWindow, bool recOnStart, CanvasDevice device, DispatcherQueue dispatcher)
     {
+
         _dispatcherQueue = dispatcher;
         _windowInfo = targetWindow;
         _device = device;
-        _captureItem = CaptureHelper.CreateItemForWindow(targetWindow.Handle);
-        _capture = new WindowCapture.WindowCapture(_device, _captureItem);
+        _captureItem = WindowCapture.CreateItemForWindow(targetWindow.Handle);
+        _capture = new WindowCapture(_device, _captureItem);
         _capture.FrameArrived += OnFrameArrived;
         _capture.CaptureStopped += OnCaptureStopped;
         SwapChain = new CanvasSwapChain(_device, _captureItem.Size.Width, _captureItem.Size.Height, 96) ?? throw new InvalidOperationException("Failed to create swap chain.");
@@ -53,6 +54,7 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
                 await ClickCapture();
             });
         }
+
     }
 
     private void OnCaptureStopped()

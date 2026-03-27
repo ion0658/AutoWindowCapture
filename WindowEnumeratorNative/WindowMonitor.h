@@ -24,7 +24,7 @@ struct WindowMonitor : WindowMonitorT<WindowMonitor> {
     void WindowRemoved(winrt::event_token const& token) noexcept;
     void Close();
 
-private:
+   private:
     static void CALLBACK OnWinEventStatic(HWINEVENTHOOK hook,
                                           DWORD eventType,
                                           HWND hwnd,
@@ -34,8 +34,8 @@ private:
                                           DWORD eventTime);
     void OnWinEvent(DWORD eventType, HWND hwnd, LONG idObject, LONG idChild);
     HWINEVENTHOOK RegisterHook(DWORD eventId);
-    std::optional<winrt::WindowEnumeratorNative::WindowInfo> TryCreateWindowInfo(
-        HWND hwnd) const;
+    std::optional<winrt::WindowEnumeratorNative::WindowInfo>
+    TryCreateWindowInfo(HWND hwnd) const;
     static std::wstring GetProcessName(DWORD processId);
 
     DWORD m_currentProcessId{::GetCurrentProcessId()};

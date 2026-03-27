@@ -14,7 +14,7 @@ struct WindowInfo : WindowInfoT<WindowInfo> {
     uint32_t ProcessId();
     hstring ProcessName();
 
-private:
+   private:
     int64_t m_handle{};
     hstring m_title;
     uint32_t m_processId{};

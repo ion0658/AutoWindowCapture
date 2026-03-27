@@ -24,3 +24,19 @@
 #include <winrt/Microsoft.UI.Xaml.Shapes.h>
 #include <winrt/Microsoft.UI.Dispatching.h>
 #include <wil/cppwinrt_helpers.h>
+#include <wil/com.h>
+#include <wil/resource.h>
+#include <wil/result.h>
+
+#include <wrl/implements.h>
+
+#include <initguid.h>
+#include <mfapi.h>
+#include <mfidl.h>
+#include <mfobjects.h>
+#include <mmdeviceapi.h>
+#include <audioclient.h>
+#include <audioclientactivationparams.h>
+
+#include <functional>
+#include <mutex>

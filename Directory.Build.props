@@ -23,6 +23,7 @@
         <IsAotCompatible>true</IsAotCompatible>
         <OptimizationPreference>speed</OptimizationPreference>
         <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+        <TrimMode>full</TrimMode>
     </PropertyGroup>
 </Project>
 

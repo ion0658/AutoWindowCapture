@@ -1,4 +1,4 @@
-﻿using AudioCapture;
+﻿using WindowAudioCaptureNative;
 using ConfigManager.Models;
 using System;
 using System.Diagnostics;
@@ -25,7 +25,7 @@ public sealed partial class MediaRenderer : IDisposable
     private MediaStreamSourceSampleRequest? _pendingAudioRequest = null;
     private MediaStreamSourceSampleRequestDeferral? _pendingAudioDeferral = null;
 
-    private readonly LoopbackAudioCapture _audioCapture = new();
+    private readonly WindowAudioCapture _audioCapture = new();
     private readonly Channel<MediaStreamSample> _videoSampleChannel = Channel.CreateUnbounded<MediaStreamSample>();
     private readonly Channel<MediaStreamSample> _audioSampleChannel = Channel.CreateUnbounded<MediaStreamSample>();
     private readonly object _frameLock = new();
@@ -36,7 +36,6 @@ public sealed partial class MediaRenderer : IDisposable
     private TimeSpan _audioTime = TimeSpan.Zero;
     VideoStreamDescriptor? _videoStreamDescriptor;
     AudioStreamDescriptor? _audioStreamDescriptor;
-    private AudioFormat _audioFormat;
 
     public MediaRenderer(GraphicsCaptureItem item, int proc_id, string process_name, AppConfig config)
     {
@@ -62,17 +61,18 @@ public sealed partial class MediaRenderer : IDisposable
         SizeUInt32 dst_size = new SizeUInt32((uint)config.RecordingResolution.Width, (uint)config.RecordingResolution.Height);
         Debug.WriteLine($"Starting MediaRenderer for process '{process_name}' (PID: {proc_id}) with resolution {dst_size.Width}x{dst_size.Height} and codec {config.RecordingCodec}");
 
-        _audioCapture.StartCapture(proc_id, OnPCMArrived);
-        _audioFormat = _audioCapture.CaptureFormat;
+        _audioCapture.AudioDataReceived += OnPCMArrived;
+        _audioCapture.StartCapture((uint)proc_id);
+        var audio_format = _audioCapture.CaptureFormat;
 
         VideoEncodingProperties sourceVideoProps = VideoEncodingProperties.CreateUncompressed(MediaEncodingSubtypes.Bgra8, (uint)item.Size.Width, (uint)item.Size.Height);
         _videoStreamDescriptor = new(sourceVideoProps);
 
         AudioEncodingProperties sourceAudioProps = AudioEncodingProperties.CreatePcm(
-            (uint)_audioFormat.SampleRate,
-            (uint)_audioFormat.Channels,
-            (uint)_audioFormat.BitsPerSample);
-         _audioStreamDescriptor = new(sourceAudioProps);
+            (uint)audio_format.SampleRate,
+            (uint)audio_format.Channels,
+            (uint)audio_format.BitsPerSample);
+        _audioStreamDescriptor = new(sourceAudioProps);
 
         _mediaStreamSource = new MediaStreamSource(_videoStreamDescriptor, _audioStreamDescriptor)
         {
@@ -88,10 +88,10 @@ public sealed partial class MediaRenderer : IDisposable
             ? MediaEncodingProfile.CreateMp4(quality)
             : MediaEncodingProfile.CreateHevc(quality);
 
-        uint audioBitrate = Math.Clamp((uint)_audioFormat.Channels * 192_000u, 96_000u, 384_000u);
+        uint audioBitrate = Math.Clamp((uint)audio_format.Channels * 192_000u, 96_000u, 384_000u);
         encodingProfile.Audio = AudioEncodingProperties.CreateAac(
-            (uint)_audioFormat.SampleRate,
-            (uint)_audioFormat.Channels,
+            (uint)audio_format.SampleRate,
+            (uint)audio_format.Channels,
             audioBitrate);
 
         encodingProfile.Video!.Width = ToEvenValue(dst_size.Width);

@@ -4,8 +4,6 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="AudioCapture/AudioCapture.vcxproj" />
-  <Project Path="AudioCaptureNative/AudioCaptureNative.vcxproj" Id="0d0d57cc-9a73-43a9-bf27-5125e05b7023" />
   <Project Path="AutoWindowCapture/AutoWindowCapture (Package)/AutoWindowCapture (Package).wapproj" Type="c7167f0d-bc9f-4e6e-afe1-012c56b48db5">
     <Build Project="false" />
   </Project>

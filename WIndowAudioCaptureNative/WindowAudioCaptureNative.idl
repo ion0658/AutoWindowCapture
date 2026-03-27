@@ -13,4 +13,16 @@ runtimeclass AudioFormat {
     };
 }
 
+delegate void AudioDataReceivedHandler(UInt8[] data, AudioFormat format);
+
+runtimeclass WindowAudioCapture : Windows.Foundation.IClosable {
+    WindowAudioCapture();
+    void StartCapture(UInt32 processId);
+    void StopCapture();
+    AudioFormat CaptureFormat {
+        get;
+    };
+    event AudioDataReceivedHandler AudioDataReceived;
+}
+
 }  // namespace WindowAudioCaptureNative

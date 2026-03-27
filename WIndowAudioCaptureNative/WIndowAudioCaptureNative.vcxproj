@@ -96,9 +96,9 @@
       <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
       <PreprocessorDefinitions>_WINRT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-    </ClCompile>
-    <Link>
+    </ClCompile>    <Link>
       <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>mfuuid.lib;mf.lib;mfplat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
       <ModuleDefinitionFile>WIndowAudioCaptureNative.def</ModuleDefinitionFile>
     </Link>
@@ -119,12 +119,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="WindowAudioCaptureNative.WindowAudioCapture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+    
+    <ClCompile Include="AudioFormat.cpp" />
+    <ClCompile Include="WindowAudioCaptureNative.WindowAudioCapture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

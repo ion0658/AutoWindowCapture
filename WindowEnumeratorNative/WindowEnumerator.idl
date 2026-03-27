@@ -18,11 +18,11 @@ runtimeclass WindowInfo {
 
 delegate void WindowInfoChangedHandler(WindowInfo window);
 
-runtimeclass WindowMonitor {
+runtimeclass WindowMonitor: Windows.Foundation.IClosable {
     WindowMonitor();
     IVectorView<WindowInfo> EnumerateWindows();
     void Stop();
     event WindowInfoChangedHandler WindowAdded;
     event WindowInfoChangedHandler WindowRemoved;
 }
-}  // namespace WindowEnumerator
+}  // namespace WindowEnumeratorNative

@@ -117,6 +117,9 @@ void WindowMonitor::Stop() {
         ::UnhookWinEvent(hook);
     }
 }
+void WindowMonitor::Close() {
+    this->Stop();
+}
 
 winrt::event_token WindowMonitor::WindowAdded(
     winrt::WindowEnumeratorNative::WindowInfoChangedHandler const& handler) {

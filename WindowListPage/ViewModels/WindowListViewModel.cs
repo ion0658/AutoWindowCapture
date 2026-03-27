@@ -48,7 +48,7 @@ public sealed partial class WindowListViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
-        _observer.Stop();
+        _observer.Dispose();
     }
 
     public void SetRecordingWindowLauncher(IRecordingWindowLauncher launcher)

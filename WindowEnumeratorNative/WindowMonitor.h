@@ -22,6 +22,7 @@ struct WindowMonitor : WindowMonitorT<WindowMonitor> {
     winrt::event_token WindowRemoved(
         winrt::WindowEnumeratorNative::WindowInfoChangedHandler const& handler);
     void WindowRemoved(winrt::event_token const& token) noexcept;
+    void Close();
 
 private:
     static void CALLBACK OnWinEventStatic(HWINEVENTHOOK hook,

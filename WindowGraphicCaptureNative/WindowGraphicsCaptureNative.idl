@@ -1,0 +1,11 @@
+namespace WindowGraphicCaptureNative {
+
+delegate void FrameArrivedHandler(Windows.Graphics.Capture.Direct3D11CaptureFrame frame);
+delegate void CaptureStoppedHandler();
+
+runtimeclass WindowCapture {
+    WindowCapture();
+    event FrameArrivedHandler FrameArrived;
+    event CaptureStoppedHandler CaptureStopped;
+}
+}  // namespace WindowGraphicCaptureNative

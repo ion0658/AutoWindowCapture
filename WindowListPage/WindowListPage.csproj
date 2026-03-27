@@ -5,6 +5,7 @@
 		<UseWinUI>true</UseWinUI>
 		<WinUISDKReferences>false</WinUISDKReferences>
 		<Platforms>x64;ARM64;x86</Platforms>
+		<AllowUnsafeBlocks>False</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
@@ -15,6 +16,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Binding\Binding.csproj" />
 		<ProjectReference Include="..\ConfigManager\ConfigManager.csproj" />
+		<ProjectReference Include="..\WindowEnumeratorNative\WindowEnumeratorNative.vcxproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<Page Update="View\WindowList.xaml">

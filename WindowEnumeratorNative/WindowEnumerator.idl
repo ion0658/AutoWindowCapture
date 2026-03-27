@@ -1,0 +1,28 @@
+namespace WindowEnumerator {
+runtimeclass WindowInfo {
+    WindowInfo(Int64 handle, String title, UInt32 processId,
+               String processName);
+    Int64 Handle {
+        get;
+    };
+    String Title {
+        get;
+    };
+    UInt32 ProcessId {
+        get;
+    };
+    String ProcessName {
+        get;
+    };
+}
+
+delegate void WindowInfoChangedHandler(WindowInfo window);
+
+runtimeclass WindowMonitor {
+    WindowMonitor();
+    IVectorView<WindowInfo> EnumerateWindows();
+    void Stop();
+    event WindowInfoChangedHandler WindowAdded;
+    event WindowInfoChangedHandler WindowRemoved;
+}
+}  // namespace WindowEnumerator

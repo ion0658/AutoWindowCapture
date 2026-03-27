@@ -94,7 +94,7 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
             double draw_x = (target_size.Width - draw_width) / 2;
             double draw_y = (target_size.Height - draw_height) / 2;
 
-            ds.DrawImage(bitmap, new Rect(draw_x, draw_y, draw_width, draw_height), bitmap.Bounds, 1.0f, CanvasImageInterpolation.NearestNeighbor);
+            ds.DrawImage(bitmap, new Rect(draw_x, draw_y, draw_width, draw_height), bitmap.Bounds, 1.0f, CanvasImageInterpolation.HighQualityCubic);
         }
 
         SwapChain.Present();

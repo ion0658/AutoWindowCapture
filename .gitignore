@@ -3,6 +3,7 @@ build/
 bin/
 obj/
 packages/
+Generated Files/
 
 *.cache
 *.user

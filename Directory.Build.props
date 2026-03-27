@@ -19,8 +19,8 @@
         <WindowsPackageType>None</WindowsPackageType>
         <BuiltInComSupport>true</BuiltInComSupport>
 
-        <PublishAot>true</PublishAot>
-        <IsAotCompatible>true</IsAotCompatible>
+        <PublishAot>false</PublishAot>
+        <IsAotCompatible>false</IsAotCompatible>
         <OptimizationPreference>speed</OptimizationPreference>
         <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
         <TrimMode>full</TrimMode>

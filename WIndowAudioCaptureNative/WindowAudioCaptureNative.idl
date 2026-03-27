@@ -1,0 +1,16 @@
+namespace WindowAudioCaptureNative {
+
+runtimeclass AudioFormat {
+    AudioFormat(Int32 SampleRate, Int32 BitsPerSample, Int32 Channels);
+    Int32 SampleRate {
+        get;
+    };
+    Int32 BitsPerSample {
+        get;
+    };
+    Int32 Channels {
+        get;
+    };
+}
+
+}  // namespace WindowAudioCaptureNative

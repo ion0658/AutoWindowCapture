@@ -51,6 +51,29 @@ public sealed partial class MediaRenderer : IDisposable
             _ => VideoEncodingQuality.Auto,
         };
     }
+
+    private static MediaEncodingProfile createEncodingProfile(RecordingCodec codec, SizeUInt32 size, AudioFormat audioFormat)
+    {
+        VideoEncodingQuality quality = GetVideoEncodingQuality(size);
+        MediaEncodingProfile profile = codec switch
+        {
+            RecordingCodec.H264 => MediaEncodingProfile.CreateMp4(quality),
+            RecordingCodec.HEVC => MediaEncodingProfile.CreateHevc(quality),
+            RecordingCodec.AV1 => MediaEncodingProfile.CreateAv1(quality),
+            _ => throw new NotImplementedException(),
+        };
+        uint audioBitrate = Math.Clamp((uint)audioFormat.Channels * 192_000u, 96_000u, 384_000u);
+        profile.Audio = AudioEncodingProperties.CreateAac(
+            (uint)audioFormat.SampleRate,
+            (uint)audioFormat.Channels,
+            audioBitrate);
+        profile.Video!.Width = ToEvenValue(size.Width);
+        profile.Video!.Height = ToEvenValue(size.Height);
+        profile.Video!.FrameRate.Numerator = 60;
+        profile.Video!.FrameRate.Denominator = 1;
+        return profile;
+    }
+
     private static uint ToEvenValue(uint value)
     {
         return (value / 2) * 2;
@@ -82,22 +105,7 @@ public sealed partial class MediaRenderer : IDisposable
         _mediaStreamSource.Starting += OnMediaStreamSourceStarting;
         _mediaStreamSource.SampleRequested += OnSampleRequested;
 
-        VideoEncodingQuality quality = GetVideoEncodingQuality(dst_size);
-
-        MediaEncodingProfile encodingProfile = config.RecordingCodec == RecordingCodec.H264
-            ? MediaEncodingProfile.CreateMp4(quality)
-            : MediaEncodingProfile.CreateHevc(quality);
-
-        uint audioBitrate = Math.Clamp((uint)audio_format.Channels * 192_000u, 96_000u, 384_000u);
-        encodingProfile.Audio = AudioEncodingProperties.CreateAac(
-            (uint)audio_format.SampleRate,
-            (uint)audio_format.Channels,
-            audioBitrate);
-
-        encodingProfile.Video!.Width = ToEvenValue(dst_size.Width);
-        encodingProfile.Video!.Height = ToEvenValue(dst_size.Height);
-        encodingProfile.Video!.FrameRate.Numerator = 60;
-        encodingProfile.Video!.FrameRate.Denominator = 1;
+        var encodingProfile = createEncodingProfile(config.RecordingCodec, dst_size, audio_format);
 
         string startDate = DateTime.Now.ToString("yyyy-MM-dd");
         string startTime = DateTime.Now.ToString("HH-mm-ss");

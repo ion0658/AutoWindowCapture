@@ -5,7 +5,8 @@ namespace ConfigManager.Models;
 public enum RecordingCodec
 {
     H264,
-    HEVC
+    HEVC,
+    AV1,
 }
 
 public enum RecordingResolutionPreset

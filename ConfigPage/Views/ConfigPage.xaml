@@ -32,6 +32,9 @@
                 <RadioButton Content="HEVC"
                              GroupName="RecordingCodec"
                              IsChecked="{x:Bind vm.SelectedRecordingCodec, Converter={StaticResource Enum}, ConverterParameter=HEVC, Mode=TwoWay}" />
+                <RadioButton Content="AV1"
+                             GroupName="RecordingCodec"
+                             IsChecked="{x:Bind vm.SelectedRecordingCodec, Converter={StaticResource Enum}, ConverterParameter=AV1, Mode=TwoWay}" />
             </StackPanel>
 
             <TextBlock Text="解像度" />

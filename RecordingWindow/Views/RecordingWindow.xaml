@@ -26,10 +26,25 @@
               HorizontalAlignment="Stretch"
               VerticalAlignment="Bottom"
               Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}">
-            <Button Content="{x:Bind vm.RecordButtonText,Mode=OneWay}"
-                    HorizontalAlignment="Center"
-                    Style="{ThemeResource AccentButtonStyle}"
-                    Command="{x:Bind vm.ClickCaptureCommand}" />
+            <Button HorizontalAlignment="Center"
+                    MinWidth="72"
+                    Padding="16,8"
+                    Command="{x:Bind vm.ClickCaptureCommand}">
+                <Button.Resources>
+                    <SolidColorBrush x:Key="ButtonForeground" Color="#FFDC2626" />
+                    <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="#FFEF4444" />
+                    <SolidColorBrush x:Key="ButtonForegroundPressed" Color="#FFB91C1C" />
+                    <SolidColorBrush x:Key="ButtonBackground" Color="#00000000" />
+                    <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#1ADC2626" />
+                    <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#33B91C1C" />
+                    <SolidColorBrush x:Key="ButtonBorderBrush" Color="#66DC2626" />
+                    <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="#99EF4444" />
+                    <SolidColorBrush x:Key="ButtonBorderBrushPressed" Color="#99B91C1C" />
+                </Button.Resources>
+                <FontIcon Glyph="{x:Bind vm.RecordButtonIcon,Mode=OneWay}"
+                          FontFamily="Segoe Fluent Icons"
+                          FontSize="20" />
+            </Button>
         </Grid>
     </Grid>
 </Window>

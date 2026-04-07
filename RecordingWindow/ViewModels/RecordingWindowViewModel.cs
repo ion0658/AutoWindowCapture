@@ -22,10 +22,11 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
     public partial CanvasSwapChain? SwapChain { get; set; } = null;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(RecordButtonText))]
+    [NotifyPropertyChangedFor(nameof(RecordButtonIcon))]
     public partial bool IsRecording { get; set; } = false;
 
-    public string RecordButtonText => IsRecording ? "StopRecording" : "Start Recording";
+
+    public string RecordButtonIcon => IsRecording ? "\uE15B" : "\uEA3B";
 
     public event Action? CloseRequested;
 

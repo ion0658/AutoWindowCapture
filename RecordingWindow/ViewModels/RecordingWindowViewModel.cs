@@ -10,6 +10,7 @@ using WindowEnumeratorNative;
 using WindowGraphicCaptureNative;
 using Windows.Foundation;
 using Windows.Graphics.Capture;
+using WinRT;
 
 namespace RecordingWindow.ViewModels;
 
@@ -46,7 +47,7 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
         _capture = new WindowCapture(_device, _captureItem);
         _capture.FrameArrived += OnFrameArrived;
         _capture.CaptureStopped += OnCaptureStopped;
-        SwapChain = new CanvasSwapChain(_device, _captureItem.Size.Width, _captureItem.Size.Height, 96) ?? throw new InvalidOperationException("Failed to create swap chain.");
+        SwapChain = new CanvasSwapChain(_device, _captureItem.Size.Width, _captureItem.Size.Height, 96, Windows.Graphics.DirectX.DirectXPixelFormat.R16G16B16A16Float, 2, CanvasAlphaMode.Premultiplied) ?? throw new InvalidOperationException("Failed to create swap chain.");
         if (recOnStart)
         {
             _dispatcherQueue.TryEnqueue(async () =>
@@ -97,7 +98,7 @@ public sealed partial class RecordingWindowViewModel : ObservableObject, IDispos
             double draw_x = (target_size.Width - draw_width) / 2;
             double draw_y = (target_size.Height - draw_height) / 2;
 
-            ds.DrawImage(bitmap, new Rect(draw_x, draw_y, draw_width, draw_height), bitmap.Bounds, 1.0f, CanvasImageInterpolation.HighQualityCubic);
+            ds.DrawImage(bitmap, new Rect(draw_x, draw_y, draw_width, draw_height), bitmap.Bounds, 1.0f, CanvasImageInterpolation.Cubic);
         }
 
         SwapChain.Present();

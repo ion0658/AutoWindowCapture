@@ -23,7 +23,7 @@ private:
         winrt::Windows::Foundation::IInspectable const& args);
 
     static constexpr winrt::Windows::Graphics::DirectX::DirectXPixelFormat PIX_FORMAT{
-        winrt::Windows::Graphics::DirectX::DirectXPixelFormat::B8G8R8A8UIntNormalized};
+        winrt::Windows::Graphics::DirectX::DirectXPixelFormat::R16G16B16A16Float};
     static constexpr int32_t NUM_OF_BUFFERS{2};
 
     winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice m_device{nullptr};
